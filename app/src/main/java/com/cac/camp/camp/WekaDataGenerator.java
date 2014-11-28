@@ -18,14 +18,14 @@ import weka.filters.unsupervised.instance.NonSparseToSparse;
  */
 public class WekaDataGenerator {
 
-    public void saveArff(Instances sparseDataset) throws IOException {
+    public static void saveArff(Instances sparseDataset) throws IOException {
         ArffSaver arffSaverInstance = new ArffSaver();
         arffSaverInstance.setInstances(sparseDataset);
         arffSaverInstance.setFile(new File("ESDN.arff"));
         arffSaverInstance.writeBatch();
     }
 
-    public void createArff() {
+    public static void createArff() {
         ArrayList<Attribute> attributes;
         Instances dataSet;
         double[] values;

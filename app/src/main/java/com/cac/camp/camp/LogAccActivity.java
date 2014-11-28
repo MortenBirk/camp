@@ -61,6 +61,14 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         } else {
             logButton.setText("Start log");
             //TODO - stop the logging
+            mSensorManager.unregisterListener(this);
+
+            synchronized (dataWindows) {
+                Log.d("1", "Collect data");
+                WekaDataGenerator.createArff();
+                Log.d("2", dataWindows.get(0).toString());
+
+            }
         }
     }
 
@@ -73,9 +81,6 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         super.onPause();
         mSensorManager.unregisterListener(this);
 
-        synchronized (dataWindows) {
-            Log.d("1", dataWindows.get(0).toString());
-        }
 
     }
 
@@ -102,6 +107,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         dataPoints.add(dp);
 
         if (dataPoints.size() % 64 == 0 && dataPoints.size() >= 128) {
+            Log.d("3", "Add window");
             int counter = dataWindows.size();
             List<DataPoint> windowedDataPoints = dataPoints.subList(counter * 64, counter * 64 + 127);
             dataWindows.add(new DataWindow(windowedDataPoints));
