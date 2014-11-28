@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,12 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.TextView;
-import weka.gui.GenericPropertiesCreator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import weka.core.converters.*;
 
 public class LogAccActivity extends Activity implements SensorEventListener{
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    private List<DataPoint> dataPoints;
+    private List<DataWindow> dataWindows;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +43,9 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
 
+        dataPoints = new ArrayList<DataPoint>();
+        dataWindows = new ArrayList<DataWindow>();
+
     }
 
     protected void onResume() {
@@ -46,6 +56,8 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+        //Log.d("1", dataWindows.get(0).toString());
+
     }
 
     @Override
@@ -66,6 +78,15 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         float z = event.values[2];
         TextView text = (TextView)findViewById(R.id.showAcc);
         text.setText("x: " + Float.toString(x) + "\n" + "y: " + Float.toString(y) + "\n" + "z: " + Float.toString(z));
+
+        DataPoint dp = new DataPoint(x, y, z);
+        dataPoints.add(dp);
+
+        if (dataPoints.size() % 64 == 0 && dataPoints.size() >= 128) {
+            int counter = dataWindows.size();
+            List<DataPoint> windowedDataPoints = dataPoints.subList(counter * 64, counter * 64 + 127);
+            dataWindows.add(new DataWindow(windowedDataPoints));
+        }
     }
 
 
