@@ -72,7 +72,10 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
-        //Log.d("1", dataWindows.get(0).toString());
+
+        synchronized (dataWindows) {
+            Log.d("1", dataWindows.get(0).toString());
+        }
 
     }
 
