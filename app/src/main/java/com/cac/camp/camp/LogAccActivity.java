@@ -53,38 +53,45 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
     }
 
-    public void logButtonClicked(View view) {
 
-        Button logButton = (Button) findViewById(R.id.stopLogButton);
+    public void runButtonClicked(View view) {
+        Button button = (Button) findViewById(R.id.runButton);
         isLogging = !isLogging;
         if (isLogging) {
-            logButton.setText("Stop log");
+            button.setText("Stop log");
             //TODO - start the logging again
             mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
 
         } else {
-            logButton.setText("Start log");
+            button.setText("Running");
             //TODO - stop the logging
             mSensorManager.unregisterListener(this);
-
-            synchronized (dataWindows) {
-                Log.d("1", "Collect data");
-                numberOfLogs++;
-                List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+            numberOfLogs++;
+            List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+            WekaDataGenerator.createArff("run" + numberOfLogs, dataWindowsCopy);
 
 
-                WekaDataGenerator.createArff("test" + numberOfLogs, dataWindowsCopy);
-                //Log.d("2", dataWindows.get(0).toString());
 
-            }
         }
-    }
-
-    public void runButtonClicked(View view) {
 
     }
 
     public void walkButtonClicked(View view) {
+        Button button = (Button) findViewById(R.id.walkButton);
+        isLogging = !isLogging;
+        if (isLogging) {
+            button.setText("Stop log");
+            //TODO - start the logging again
+            mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+
+        } else {
+            button.setText("Walking");
+            //TODO - stop the logging
+            mSensorManager.unregisterListener(this);
+            numberOfLogs++;
+            List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+            WekaDataGenerator.createArff("walk" + numberOfLogs, dataWindowsCopy);
+        }
 
     }
 

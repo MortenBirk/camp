@@ -66,8 +66,6 @@ public class WekaDataGenerator {
                 nonSparseToSparseInstance.setInputFormat(dataSet);
                 Instances sparseDataset = Filter.useFilter(dataSet, nonSparseToSparseInstance);
 
-                System.out.println(sparseDataset);
-
                 saveArff(sparseDataset, fileName + windows.indexOf(dw));
 
             } catch (Exception e) {
