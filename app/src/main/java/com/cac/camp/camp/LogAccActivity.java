@@ -68,7 +68,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.createArff("run" + numberOfLogs, dataWindowsCopy);
+            WekaDataGenerator.createArff("run" + numberOfLogs, dataWindowsCopy, "run");
 
 
 
@@ -90,7 +90,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.createArff("walk" + numberOfLogs, dataWindowsCopy);
+            WekaDataGenerator.createArff("walk" + numberOfLogs, dataWindowsCopy, "walk");
         }
 
     }
