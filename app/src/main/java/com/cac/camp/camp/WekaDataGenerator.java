@@ -5,6 +5,7 @@ import android.os.Environment;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -20,52 +21,52 @@ import weka.filters.unsupervised.instance.NonSparseToSparse;
  */
 public class WekaDataGenerator {
 
-    public static void saveArff(Instances sparseDataset) throws IOException {
+    public static void saveArff(Instances sparseDataset, String fileName) throws IOException {
         ArffSaver arffSaverInstance = new ArffSaver();
         arffSaverInstance.setInstances(sparseDataset);
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "ESDN.arff");
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + fileName + ".arff");
         arffSaverInstance.setFile(file);
-
-
         arffSaverInstance.writeBatch();
     }
 
-    public static void createArff() {
+    public static void createArff(String fileName, List<DataWindow> windows) {
         ArrayList<Attribute> attributes;
         Instances dataSet;
         double[] values;
         attributes = new ArrayList<Attribute>();
 
-        attributes.add(new Attribute("att1"));
-        attributes.add(new Attribute("att2"));
-        attributes.add(new Attribute("att3"));
-        attributes.add(new Attribute("att4"));
+        attributes.add(new Attribute("x"));
+        attributes.add(new Attribute("y"));
+        attributes.add(new Attribute("z"));
 
-        dataSet = new Instances("ESDN", attributes, 0);
+        dataSet = new Instances("DataWindow", attributes, 0);
 
-        values = new double[dataSet.numAttributes()];
-        values[0] = 3;
-        values[1] =7;
-        values[3] = 1;
-        dataSet.add(new SparseInstance(1.0, values));
+        for (DataWindow dw : windows) {
 
-        values = new double[dataSet.numAttributes()];
-        values[2] = 2;
-        values[3] = 8;
-        dataSet.add(new DenseInstance(1.0, values));
+            for (DataPoint dp : dw.getDataPoints()) {
+                values = new double[dataSet.numAttributes()];
+                values[0] = dp.getX();
+                values[1] = dp.getY();
+                values[2] = dp.getZ();
+                dataSet.add(new SparseInstance(1.0, values));
+            }
 
-        NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse();
-        try {
-            nonSparseToSparseInstance.setInputFormat(dataSet);
-            Instances sparseDataset = Filter.useFilter(dataSet, nonSparseToSparseInstance);
+            NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse();
+            try {
+                nonSparseToSparseInstance.setInputFormat(dataSet);
+                Instances sparseDataset = Filter.useFilter(dataSet, nonSparseToSparseInstance);
 
-            System.out.println(sparseDataset);
+                System.out.println(sparseDataset);
 
-            saveArff(sparseDataset);
+                saveArff(sparseDataset, fileName + windows.indexOf(dw));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+
+
 
 
 

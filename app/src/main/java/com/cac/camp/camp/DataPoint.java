@@ -18,4 +18,16 @@ public class DataPoint {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
+    }
 }

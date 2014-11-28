@@ -20,4 +20,8 @@ public class DataWindow {
         }
         return dataString;
     }
+
+    public List<DataPoint> getDataPoints() {
+        return dataPoints;
+    }
 }

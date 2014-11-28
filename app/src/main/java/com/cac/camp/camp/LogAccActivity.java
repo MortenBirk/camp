@@ -65,7 +65,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
             synchronized (dataWindows) {
                 Log.d("1", "Collect data");
-                WekaDataGenerator.createArff();
+                WekaDataGenerator.createArff("test", dataWindows);
                 //Log.d("2", dataWindows.get(0).toString());
 
             }
