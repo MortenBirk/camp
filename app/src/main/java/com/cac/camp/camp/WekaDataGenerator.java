@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import weka.core.Attribute;
-import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
@@ -37,13 +36,20 @@ public class WekaDataGenerator {
         double[] values;
         attributes = new ArrayList<Attribute>();
 
+        List<String> classNameList = new ArrayList<String>();
+        classNameList.add("running");
+        classNameList.add("walk");
+
         attributes.add(new Attribute("x"));
         attributes.add(new Attribute("y"));
         attributes.add(new Attribute("z"));
         attributes.add(new Attribute("magnitude"));
 
+        Attribute classNames = new Attribute("class", classNameList);
+
+        attributes.add(classNames);
+
         dataSet = new Instances("DataWindow", attributes, 0);
-        dataSet.setClass(new Attribute(className));
 
         Iterator<DataWindow> iter = windows.iterator();
         while (iter.hasNext()) {
@@ -58,8 +64,16 @@ public class WekaDataGenerator {
                 values[1] = dp.getY();
                 values[2] = dp.getZ();
                 values[3] = dp.getMagnitude();
+                if (className.equals("running")) {
+                    values[4] = 0; //OfValue(className);
 
-                dataSet.add(new SparseInstance(1.0, values));
+                } else {
+                    values[4] = 1; //OfValue(className);
+                }
+
+                Instance instance = new SparseInstance(1.0, values);
+                //instance.setClassValue(className);
+                dataSet.add(instance);
             }
 
             NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse();

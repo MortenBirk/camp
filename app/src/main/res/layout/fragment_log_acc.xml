@@ -2,10 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.cac.camp.camp.LogAccActivity$PlaceholderFragment">
 
     <TextView
@@ -29,7 +25,10 @@
         android:layout_height="wrap_content"
         android:text="Walking"
         android:id="@+id/walkButton"
-        android:onClick="walkButtonClicked" />
+        android:onClick="walkButtonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="182dp" />
 
 
 </RelativeLayout>

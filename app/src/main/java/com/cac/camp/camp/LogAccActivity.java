@@ -30,7 +30,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     private Sensor mAccelerometer;
     private List<DataPoint> dataPoints;
     private List<DataWindow> dataWindows;
-    private Boolean isLogging = true;
+    private Boolean isLogging = false;
     private int numberOfLogs = 0;
 
     @Override
@@ -46,7 +46,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+        //mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
 
         dataPoints = new ArrayList<DataPoint>();
         dataWindows = new ArrayList<DataWindow>();
@@ -68,7 +68,8 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.createArff("run" + numberOfLogs, dataWindowsCopy, "run");
+            WekaDataGenerator.createArff("running" + numberOfLogs, dataWindowsCopy, "running");
+            this.clearData();
 
 
 
@@ -91,13 +92,19 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
             WekaDataGenerator.createArff("walk" + numberOfLogs, dataWindowsCopy, "walk");
+            this.clearData();
         }
 
     }
 
+    private void clearData() {
+        this.dataPoints = new ArrayList<DataPoint>();
+        this.dataWindows = new ArrayList<DataWindow>();
+    }
+
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        //mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     protected void onPause() {
