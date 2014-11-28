@@ -1,5 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".StartScreenActivity" >
+    tools:context="com.cac.camp.camp.LogAccActivity" >
 
 </menu>
