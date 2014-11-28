@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     private Sensor mAccelerometer;
     private List<DataPoint> dataPoints;
     private List<DataWindow> dataWindows;
+    private Boolean isLogging = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
                     .commit();
         }
 
+
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
@@ -46,6 +49,19 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         dataPoints = new ArrayList<DataPoint>();
         dataWindows = new ArrayList<DataWindow>();
 
+    }
+
+    public void logButtonClicked(View view) {
+
+        Button logButton = (Button) findViewById(R.id.stopLogButton);
+        isLogging = !isLogging;
+        if (isLogging) {
+            logButton.setText("Stop log");
+            //TODO - start the logging again
+        } else {
+            logButton.setText("Start log");
+            //TODO - stop the logging
+        }
     }
 
     protected void onResume() {
