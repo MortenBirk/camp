@@ -5,7 +5,9 @@ import android.os.Environment;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -38,16 +40,24 @@ public class WekaDataGenerator {
         attributes.add(new Attribute("x"));
         attributes.add(new Attribute("y"));
         attributes.add(new Attribute("z"));
+        attributes.add(new Attribute("magnitude"));
 
         dataSet = new Instances("DataWindow", attributes, 0);
 
-        for (DataWindow dw : windows) {
+        Iterator<DataWindow> iter = windows.iterator();
+        while (iter.hasNext()) {
+            DataWindow dw = iter.next();
+            List<DataPoint> dpCopy = new CopyOnWriteArrayList<DataPoint>(dw.getDataPoints());
 
-            for (DataPoint dp : dw.getDataPoints()) {
+
+
+            for (DataPoint dp : dpCopy) {
                 values = new double[dataSet.numAttributes()];
                 values[0] = dp.getX();
                 values[1] = dp.getY();
                 values[2] = dp.getZ();
+                values[3] = dp.getMagnitude();
+
                 dataSet.add(new SparseInstance(1.0, values));
             }
 

@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import weka.core.converters.*;
 
@@ -30,6 +31,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     private List<DataPoint> dataPoints;
     private List<DataWindow> dataWindows;
     private Boolean isLogging = true;
+    private int numberOfLogs = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,8 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         if (isLogging) {
             logButton.setText("Stop log");
             //TODO - start the logging again
+            mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+
         } else {
             logButton.setText("Start log");
             //TODO - stop the logging
@@ -65,11 +69,23 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
             synchronized (dataWindows) {
                 Log.d("1", "Collect data");
-                WekaDataGenerator.createArff("test", dataWindows);
+                numberOfLogs++;
+                List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+
+
+                WekaDataGenerator.createArff("test" + numberOfLogs, dataWindowsCopy);
                 //Log.d("2", dataWindows.get(0).toString());
 
             }
         }
+    }
+
+    public void runButtonClicked(View view) {
+
+    }
+
+    public void walkButtonClicked(View view) {
+
     }
 
     protected void onResume() {

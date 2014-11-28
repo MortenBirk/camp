@@ -30,4 +30,8 @@ public class DataPoint {
     public float getZ() {
         return z;
     }
+
+    public double getMagnitude() {
+        return Math.sqrt(x*x + y*y + z*z);
+    }
 }

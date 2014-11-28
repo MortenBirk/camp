@@ -17,11 +17,19 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop log"
-        android:id="@+id/stopLogButton"
-        android:onClick="logButtonClicked"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="Running"
+        android:id="@+id/runButton"
+        android:onClick="runButtonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="282dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Walking"
+        android:id="@+id/walkButton"
+        android:onClick="walkButtonClicked" />
 
 
 </RelativeLayout>
