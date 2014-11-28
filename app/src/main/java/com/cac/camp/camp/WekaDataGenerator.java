@@ -1,5 +1,7 @@
 package com.cac.camp.camp;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +23,10 @@ public class WekaDataGenerator {
     public static void saveArff(Instances sparseDataset) throws IOException {
         ArffSaver arffSaverInstance = new ArffSaver();
         arffSaverInstance.setInstances(sparseDataset);
-        arffSaverInstance.setFile(new File("ESDN.arff"));
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "ESDN.arff");
+        arffSaverInstance.setFile(file);
+
+
         arffSaverInstance.writeBatch();
     }
 
