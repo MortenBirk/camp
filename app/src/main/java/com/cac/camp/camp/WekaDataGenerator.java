@@ -31,7 +31,7 @@ public class WekaDataGenerator {
         arffSaverInstance.writeBatch();
     }
 
-    public static void createArff(String fileName, List<DataWindow> windows) {
+    public static void createArff(String fileName, List<DataWindow> windows, String className) {
         ArrayList<Attribute> attributes;
         Instances dataSet;
         double[] values;
@@ -43,6 +43,7 @@ public class WekaDataGenerator {
         attributes.add(new Attribute("magnitude"));
 
         dataSet = new Instances("DataWindow", attributes, 0);
+        dataSet.setClass(new Attribute(className));
 
         Iterator<DataWindow> iter = windows.iterator();
         while (iter.hasNext()) {
