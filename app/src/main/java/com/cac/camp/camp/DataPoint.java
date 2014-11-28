@@ -7,18 +7,16 @@ public class DataPoint {
     private float x;
     private float y;
     private float z;
-    private String className;
 
-    public DataPoint(float x, float y, float z, String className) {
+    public DataPoint(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.className = className;
     }
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ", " + z + ") --> " + className;
+        return "(" + x + ", " + y + ", " + z + ")";
     }
 
     public float getX() {
@@ -35,9 +33,5 @@ public class DataPoint {
 
     public double getMagnitude() {
         return Math.sqrt(x*x + y*y + z*z);
-    }
-
-    public String getClassName() {
-        return this.className;
     }
 }
