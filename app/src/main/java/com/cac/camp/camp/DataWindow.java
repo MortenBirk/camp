@@ -43,6 +43,14 @@ public class DataWindow {
         return min;
     }
 
+    public double getIntegral() {
+        double integral = 0;
+        for (DataPoint dp : this.dataPoints) {
+            integral += dp.getMagnitude();
+        }
+        return integral;
+    }
+
     public double getMean() {
         double mean = 0;
         for (DataPoint dp : this.dataPoints) {

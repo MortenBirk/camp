@@ -40,10 +40,10 @@ public class WekaDataGenerator {
         classNameList.add("running");
         classNameList.add("walk");
 
-        attributes.add(new Attribute("x"));
-        attributes.add(new Attribute("y"));
-        attributes.add(new Attribute("z"));
-        attributes.add(new Attribute("magnitude"));
+
+        attributes.add(new Attribute("maxMag"));
+        attributes.add(new Attribute("minMag"));
+        attributes.add(new Attribute("integral"));
 
         Attribute classNames = new Attribute("class", classNameList);
 
@@ -54,44 +54,33 @@ public class WekaDataGenerator {
         Iterator<DataWindow> iter = windows.iterator();
         while (iter.hasNext()) {
             DataWindow dw = iter.next();
-            List<DataPoint> dpCopy = new CopyOnWriteArrayList<DataPoint>(dw.getDataPoints());
+            values = new double[dataSet.numAttributes()];
+            values[0] = dw.getMax();
+            values[1]= dw.getMin();
+            values[2] = dw.getIntegral();
+            if (className.equals("running")) {
+                values[3] = 0; //OfValue(className);
 
-
-
-            for (DataPoint dp : dpCopy) {
-                values = new double[dataSet.numAttributes()];
-                values[0] = dp.getX();
-                values[1] = dp.getY();
-                values[2] = dp.getZ();
-                values[3] = dp.getMagnitude();
-                if (className.equals("running")) {
-                    values[4] = 0; //OfValue(className);
-
-                } else {
-                    values[4] = 1; //OfValue(className);
-                }
-
-                Instance instance = new SparseInstance(1.0, values);
-                //instance.setClassValue(className);
-                dataSet.add(instance);
+            } else {
+                values[3] = 1; //OfValue(className);
             }
 
-            NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse();
-            try {
-                nonSparseToSparseInstance.setInputFormat(dataSet);
-                Instances sparseDataset = Filter.useFilter(dataSet, nonSparseToSparseInstance);
+            Instance instance = new SparseInstance(1.0, values);
+            //instance.setClassValue(className);
+            dataSet.add(instance);
 
-                saveArff(sparseDataset, fileName + windows.indexOf(dw));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
+        NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse();
+        try {
+            nonSparseToSparseInstance.setInputFormat(dataSet);
+            Instances sparseDataset = Filter.useFilter(dataSet, nonSparseToSparseInstance);
 
+            saveArff(sparseDataset, fileName);
 
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
