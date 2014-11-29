@@ -1,5 +1,6 @@
 package com.cac.camp.camp;
 
+import android.os.Debug;
 import android.os.Environment;
 
 import java.io.File;
@@ -31,6 +32,12 @@ public class WekaDataGenerator {
     }
 
     public static void createArff(String fileName, List<DataWindow> windows, String className) {
+        //Remove the first and last element. It might be bad data
+        if(windows.size() > 2) {
+            windows.remove(windows.size()-1);
+            windows.remove(0);
+        }
+
         ArrayList<Attribute> attributes;
         Instances dataSet;
         double[] values;
