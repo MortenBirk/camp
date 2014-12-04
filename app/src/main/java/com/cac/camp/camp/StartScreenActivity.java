@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.Button;
 
+import java.util.ArrayList;
+
 import com.spotify.sdk.android.Spotify;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.authentication.SpotifyAuthentication;
@@ -30,6 +32,7 @@ import com.spotify.sdk.android.playback.PlayerState;
 public class StartScreenActivity extends Activity implements ConnectionStateCallback, PlayerNotificationCallback {
     private final String CLIENT_ID = getString(R.string.CLIENT_ID);
     private final String REDIRECT_URI = getString(R.string.CLIENT_ID);
+    private ServerCommunicator sc;
 
     Player mPlayer;
 
@@ -71,6 +74,7 @@ public class StartScreenActivity extends Activity implements ConnectionStateCall
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sc = new ServerCommunicator(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
         if (savedInstanceState == null) {
@@ -93,6 +97,24 @@ public class StartScreenActivity extends Activity implements ConnectionStateCall
         Spotify.destroyPlayer(this);
         super.onDestroy();
     }
+
+    //Create a fixed user, no feedback is given
+    public void createUser(View view) {
+        ArrayList<String> chill = new ArrayList();
+        chill.add("God Sang");
+
+        ArrayList<String> calm = new ArrayList();
+        calm.add("rolig Sang");
+
+        ArrayList<String> normal = new ArrayList();
+        normal.add("normal Sang");
+
+        ArrayList<String> wild = new ArrayList();
+        wild.add("Vild Sang");
+
+        sc.createUser("User4", chill, calm, normal, wild);
+    }
+
 
     /**
      * A placeholder fragment containing a simple view.
