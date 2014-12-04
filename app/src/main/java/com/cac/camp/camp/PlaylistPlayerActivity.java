@@ -23,11 +23,13 @@ public class PlaylistPlayerActivity extends Activity {
     List<String> playlist = new ArrayList<String>();
     ListView playlistView;
     Boolean isPlaying = false;
+    Button playbutton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_player);
+        playbutton = (Button) findViewById(R.id.playbutton);
 
         playlistView = (ListView) findViewById(R.id.playlistView);
 
@@ -62,7 +64,6 @@ public class PlaylistPlayerActivity extends Activity {
     }
 
     public void play(View view){
-        Button playbutton = (Button) findViewById(R.id.playbutton);
         if (isPlaying) {
             mPlayer.pause();
             playbutton.setText(R.string.fa_pause);
