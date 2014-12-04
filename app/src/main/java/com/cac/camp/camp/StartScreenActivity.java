@@ -12,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import java.util.ArrayList;
+
 
 public class StartScreenActivity extends Activity {
-
+    private ServerCommunicator sc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sc = new ServerCommunicator(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
         if (savedInstanceState == null) {
@@ -29,6 +32,24 @@ public class StartScreenActivity extends Activity {
     public void runLogAcc(View view) {
         Intent intent = new Intent(this, LogAccActivity.class);
         startActivity(intent);
+    }
+
+
+    //Create a fixed user, no feedback is given
+    public void createUser(View view) {
+        ArrayList<String> chill = new ArrayList();
+        chill.add("God Sang");
+
+        ArrayList<String> calm = new ArrayList();
+        calm.add("rolig Sang");
+
+        ArrayList<String> normal = new ArrayList();
+        normal.add("normal Sang");
+
+        ArrayList<String> wild = new ArrayList();
+        wild.add("Vild Sang");
+
+        sc.createUser("User4", chill, calm, normal, wild);
     }
 
 
