@@ -29,7 +29,7 @@ import com.spotify.sdk.android.playback.PlayerNotificationCallback;
 import com.spotify.sdk.android.playback.PlayerState;
 
 
-public class StartScreenActivity extends Activity implements ConnectionStateCallback, PlayerNotificationCallback {
+public class StartScreenActivity extends Activity {
     private ServerCommunicator sc;
 
     Player mPlayer;
@@ -42,25 +42,10 @@ public class StartScreenActivity extends Activity implements ConnectionStateCall
 
             AuthenticationResponse response = SpotifyAuthentication.parseOauthResponse(uri);
             Spotify spotify = new Spotify(response.getAccessToken());
-            mPlayer = spotify.getPlayer(this, "CAMP", this, new Player.InitializationObserver() {
-                @Override
-                public void onInitialized() {
-                    mPlayer.addConnectionStateCallback(StartScreenActivity.this);
-                    mPlayer.addPlayerNotificationCallback(StartScreenActivity.this);
-                    //mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
-                    Button button = (Button) findViewById(R.id.gotoPlaylistBtn);
-                    button.setEnabled(true);
+            SpotifySingleton.getInstance().setSpotify(spotify);
+            Button button = (Button) findViewById(R.id.gotoPlaylistBtn);
+            button.setEnabled(true);
 
-                    SpotifySingleton.getInstance().setPlayer(mPlayer);
-
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    Log.e("SpotifyIntentService", "Could not initialize player: " + throwable.getMessage());
-                    //debugLog("accessToken " + accessToken);
-                }
-            });
 
 
         }
@@ -132,54 +117,5 @@ public class StartScreenActivity extends Activity implements ConnectionStateCall
         }
     }
 
-    /*
-     * Spotify interface methods goes below
-     */
 
-    @Override
-    public void onLoggedIn() {
-        Log.d("StartScrSpotifyIntentServiceeenActivity", "User logged in");
-    }
-
-    @Override
-    public void onLoggedOut() {
-        Log.d("SpotifyIntentService", "User logged out");
-
-    }
-
-    @Override
-    public void onLoginFailed(Throwable throwable) {
-        Log.d("SpotifyIntentService", "Login failed");
-
-    }
-
-    @Override
-    public void onTemporaryError() {
-        Log.d("SpotifyIntentService", "Temporary error occurred");
-
-    }
-
-    @Override
-    public void onNewCredentials(String s) {
-        Log.d("SpotifyIntentService", "User credentials blob received");
-
-    }
-
-    @Override
-    public void onConnectionMessage(String message) {
-        Log.d("SpotifyIntentService", "Received connection message: " + message);
-
-    }
-
-    @Override
-    public void onPlaybackEvent(PlayerNotificationCallback.EventType eventType, PlayerState playerState) {
-        Log.d("SpotifyIntentService", "Playback event received: " + eventType.name());
-
-    }
-
-    @Override
-    public void onPlaybackError(PlayerNotificationCallback.ErrorType errorType, String s) {
-        Log.d("SpotifyIntentService", "Playback error received: " + errorType.name());
-
-    }
 }

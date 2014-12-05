@@ -1,5 +1,6 @@
 package com.cac.camp.camp;
 
+import com.spotify.sdk.android.Spotify;
 import com.spotify.sdk.android.playback.Player;
 
 /**
@@ -11,16 +12,17 @@ public class SpotifySingleton {
     public static SpotifySingleton getInstance() {
         return ourInstance;
     }
-    private Player mPlayer;
+    //private Player mPlayer;
+    private Spotify spotify;
 
     private SpotifySingleton() {
     }
 
-    public Player getPlayer() {
-        return mPlayer;
+    public Spotify getSpotify() {
+        return spotify;
     }
 
-    public void setPlayer(Player mPlayer) {
-        this.mPlayer = mPlayer;
+    public void setSpotify(Spotify spotify) {
+        this.spotify = spotify;
     }
 }

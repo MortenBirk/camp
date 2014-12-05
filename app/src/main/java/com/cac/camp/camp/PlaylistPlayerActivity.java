@@ -3,6 +3,7 @@ package com.cac.camp.camp;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,19 +13,24 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.MediaController;
 
+import com.spotify.sdk.android.Spotify;
+import com.spotify.sdk.android.playback.ConnectionStateCallback;
 import com.spotify.sdk.android.playback.Player;
+import com.spotify.sdk.android.playback.PlayerNotificationCallback;
+import com.spotify.sdk.android.playback.PlayerState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class PlaylistPlayerActivity extends Activity {
+public class PlaylistPlayerActivity extends Activity implements ConnectionStateCallback, PlayerNotificationCallback {
     Player mPlayer;
     List<String> staticPlaylist = new ArrayList<String>();
     List<Track> playlist = new ArrayList<Track>();
     ListView playlistView;
     Boolean isPlaying = false;
     Button playbutton;
+    Track currentTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +52,6 @@ public class PlaylistPlayerActivity extends Activity {
 
         }
 
-
-
         ArrayAdapter<Track> adapter = new ArrayAdapter<Track>(
                 getBaseContext(),
                 android.R.layout.simple_list_item_1,
@@ -56,13 +60,20 @@ public class PlaylistPlayerActivity extends Activity {
 
         playlistView.setAdapter(adapter);
 
-        mPlayer = SpotifySingleton.getInstance().getPlayer();
+        Spotify spotify = SpotifySingleton.getInstance().getSpotify();
 
-        if (isPlaying == false) {
-            //mPlayer.play(playlist);
-            isPlaying = true;
-        }
+        mPlayer = spotify.getPlayer(this, "CAMP", this, new Player.InitializationObserver() {
+            @Override
+            public void onInitialized() {
+                mPlayer.addConnectionStateCallback(PlaylistPlayerActivity.this);
+                mPlayer.addPlayerNotificationCallback(PlaylistPlayerActivity.this);
+            }
 
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e("SpotifyIntentService", "Could not initialize player: " + throwable.getMessage());
+            }
+        });
         Typeface font = Typeface.createFromAsset( getAssets(), "fontawesome-webfont.ttf" );
         Button playbutton = (Button) findViewById(R.id.playbutton);
         Button nextbutton = (Button) findViewById(R.id.nextbutton);
@@ -118,6 +129,74 @@ public class PlaylistPlayerActivity extends Activity {
 
     public void handleTrackResponse(Track t) {
         playlist.add(t);
+        if (currentTrack == null) {
+            currentTrack = t;
+            Log.d("currentTrack", t.toString());
+        }
         mPlayer.queue(t.toURI());
+    }
+
+    /*
+     * Spotify interface methods goes below
+     */
+
+    @Override
+    public void onLoggedIn() {
+        Log.d("StartScrSpotifyIntentServiceeenActivity", "User logged in");
+    }
+
+    @Override
+    public void onLoggedOut() {
+        Log.d("SpotifyIntentService", "User logged out");
+
+    }
+
+    @Override
+    public void onLoginFailed(Throwable throwable) {
+        Log.d("SpotifyIntentService", "Login failed");
+
+    }
+
+    @Override
+    public void onTemporaryError() {
+        Log.d("SpotifyIntentService", "Temporary error occurred");
+
+    }
+
+    @Override
+    public void onNewCredentials(String s) {
+        Log.d("SpotifyIntentService", "User credentials blob received");
+
+    }
+
+    @Override
+    public void onConnectionMessage(String message) {
+        Log.d("SpotifyIntentService", "Received connection message: " + message);
+
+    }
+
+    @Override
+    public void onPlaybackEvent(PlayerNotificationCallback.EventType eventType, PlayerState playerState) {
+        Log.d("SpotifyIntentService", "Playback event received: " + eventType.name());
+        if ( eventType.name().equals("TRACK_END") ) {
+            int newIndex = playlist.indexOf(currentTrack)+1;
+            if (newIndex >= playlist.size()) {
+                currentTrack = playlist.get(newIndex);
+            } else {
+                currentTrack = playlist.get(0);
+            }
+            Log.d("new currentTrack",currentTrack.toString());
+        } else if (eventType.name().equals("PAUSE")) {
+            isPlaying = false;
+        } else if (eventType.name().equals("PLAY")) {
+            isPlaying = true;
+        }
+
+    }
+
+    @Override
+    public void onPlaybackError(PlayerNotificationCallback.ErrorType errorType, String s) {
+        Log.d("SpotifyIntentService", "Playback error received: " + errorType.name());
+
     }
 }
