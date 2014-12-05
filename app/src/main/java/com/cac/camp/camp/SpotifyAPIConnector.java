@@ -1,5 +1,6 @@
 package com.cac.camp.camp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -23,7 +24,7 @@ public class SpotifyAPIConnector extends APIConnector {
     }
 
     //Get request
-    public void getTrackFromID(String id){
+    public void getTrackFromID(final String id, final PlaylistPlayerActivity activity){
         String url = baseURL+"tracks/"+id;
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -37,7 +38,11 @@ public class SpotifyAPIConnector extends APIConnector {
                             JSONArray artists = response.getJSONArray("artists");
                             JSONObject artist = artists.getJSONObject(0);
                             String artistName = artist.getString("name");
-                            Log.e("sc", songName+" by "+artistName);
+                            Log.e("sc", songName + " by " + artistName);
+                            Track track = new Track(id,songName,artistName);
+                            activity.handleTrackResponse(track);
+
+
                         } catch (JSONException e){
                             e.printStackTrace();
                         }
@@ -53,8 +58,8 @@ public class SpotifyAPIConnector extends APIConnector {
                 });
         queue.add(jsObjRequest);
 
-        Track track = new Track(id,"","");
     }
+
 
 
 }

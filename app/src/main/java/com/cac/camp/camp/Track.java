@@ -20,4 +20,12 @@ public class Track {
     public void setId(String id) {
         this.id = id;
     }
+
+    public String toURI() {
+        return "spotify:track:"+this.id;
+    }
+
+    public String toString() {
+        return name+" by "+artist;
+    }
 }

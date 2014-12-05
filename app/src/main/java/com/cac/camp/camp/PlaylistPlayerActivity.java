@@ -20,7 +20,8 @@ import java.util.List;
 
 public class PlaylistPlayerActivity extends Activity {
     Player mPlayer;
-    List<String> playlist = new ArrayList<String>();
+    List<String> staticPlaylist = new ArrayList<String>();
+    List<Track> playlist = new ArrayList<Track>();
     ListView playlistView;
     Boolean isPlaying = false;
     Button playbutton;
@@ -33,15 +34,21 @@ public class PlaylistPlayerActivity extends Activity {
 
         playlistView = (ListView) findViewById(R.id.playlistView);
 
-        playlist.add("spotify:track:5QruhkvTtEi6cR8nSr6LwT");
-        playlist.add("spotify:track:4KqQfcx8RM9liPiHEvEJNg");
-        playlist.add("spotify:track:768j11Y0ksbgdncnFuAEZ4");
-        playlist.add("spotify:track:3DqhtDaWayCtfV69d2p5vH");
+        staticPlaylist.add("5QruhkvTtEi6cR8nSr6LwT");
+        staticPlaylist.add("4KqQfcx8RM9liPiHEvEJNg");
+        staticPlaylist.add("768j11Y0ksbgdncnFuAEZ4");
+        staticPlaylist.add("3DqhtDaWayCtfV69d2p5vH");
 
         SpotifyAPIConnector api = new SpotifyAPIConnector(this);
-        api.getTrackFromID("5QruhkvTtEi6cR8nSr6LwT");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        for ( String trackURI : staticPlaylist ) {
+            api.getTrackFromID(trackURI, this);
+
+        }
+
+
+
+        ArrayAdapter<Track> adapter = new ArrayAdapter<Track>(
                 getBaseContext(),
                 android.R.layout.simple_list_item_1,
                 playlist
@@ -52,7 +59,7 @@ public class PlaylistPlayerActivity extends Activity {
         mPlayer = SpotifySingleton.getInstance().getPlayer();
 
         if (isPlaying == false) {
-            mPlayer.play(playlist);
+            //mPlayer.play(playlist);
             isPlaying = true;
         }
 
@@ -107,5 +114,10 @@ public class PlaylistPlayerActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void handleTrackResponse(Track t) {
+        playlist.add(t);
+        mPlayer.queue(t.toURI());
     }
 }
