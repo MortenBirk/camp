@@ -30,8 +30,6 @@ import com.spotify.sdk.android.playback.PlayerState;
 
 
 public class StartScreenActivity extends Activity implements ConnectionStateCallback, PlayerNotificationCallback {
-    private String CLIENT_ID;
-    private String REDIRECT_URI;
     private ServerCommunicator sc;
 
     Player mPlayer;
@@ -74,8 +72,8 @@ public class StartScreenActivity extends Activity implements ConnectionStateCall
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CLIENT_ID = getString(R.string.CLIENT_ID);
-        REDIRECT_URI = getString(R.string.REDIRECT_URI);
+        String CLIENT_ID = getString(R.string.CLIENT_ID);
+        String REDIRECT_URI = getString(R.string.REDIRECT_URI);
         sc = new ServerCommunicator(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
