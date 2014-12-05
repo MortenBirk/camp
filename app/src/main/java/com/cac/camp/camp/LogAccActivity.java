@@ -31,6 +31,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     private List<DataPoint> dataPoints;
     private List<DataWindow> dataWindows;
     private Boolean isLogging = false;
+    private Boolean isClassifying = false;
     private int numberOfLogs = 0;
 
     @Override
@@ -68,7 +69,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.createArff("running" + numberOfLogs, dataWindowsCopy, "running");
+            WekaDataGenerator.saveArff(dataWindowsCopy, "running" + numberOfLogs, "running");
             this.clearData();
 
 
@@ -82,12 +83,12 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         isLogging = !isLogging;
         if (isLogging) {
             button.setText("Stop log");
-            //TODO - start the logging again
+            // - start the logging again
             mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
 
         } else {
             button.setText("Walking");
-            //TODO - stop the logging
+            // - stop the logging
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
@@ -95,6 +96,31 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             this.clearData();
         }
 
+    }
+
+    public void classifyButtonClicked(View view) {
+        Button button = (Button) findViewById(R.id.walkButton);
+        isClassifying = !isClassifying;
+        if (isClassifying) {
+            button.setText("Classifying...");
+            // - start the logging again
+            mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        else {
+            button.setText("Classify");
+            // - stop the logging
+            mSensorManager.unregisterListener(this);
+            List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+            WekaDataGenerator.classify(dataWindowsCopy, this);
+        }
+    }
+
+    public void presentClassification(List<String> classifications) {
+        String classS = "";
+        for (String s : classifications)
+            classS += s;
+
+        Log.e("classify", classS);
     }
 
     private void clearData() {
