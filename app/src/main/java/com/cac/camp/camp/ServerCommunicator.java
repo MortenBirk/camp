@@ -64,6 +64,7 @@ public class ServerCommunicator {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.d("sc", "request worked");
+
                 }
             }, new Response.ErrorListener() {
 

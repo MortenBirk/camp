@@ -38,6 +38,9 @@ public class PlaylistPlayerActivity extends Activity {
         playlist.add("spotify:track:768j11Y0ksbgdncnFuAEZ4");
         playlist.add("spotify:track:3DqhtDaWayCtfV69d2p5vH");
 
+        SpotifyAPIConnector api = new SpotifyAPIConnector(this);
+        api.getTrackFromID("5QruhkvTtEi6cR8nSr6LwT");
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 getBaseContext(),
                 android.R.layout.simple_list_item_1,
