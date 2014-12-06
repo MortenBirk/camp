@@ -100,6 +100,28 @@ public class StartScreenActivity extends Activity {
         sc.createUser("User4", chill, calm, normal, wild);
     }
 
+    //Create playlist
+    public void createPlaylist(View view) {
+
+        ArrayList<String> users = new ArrayList();
+        users.add("User4");
+
+        sc.createPlaylist(users, "normalParty");
+    }
+
+    //Update playlist
+    public void updatePlaylist(View view) {
+        ArrayList<String> users = new ArrayList();
+        users.add("User4");
+
+        sc.updatePlaylist(users, "normalParty", "5482dcf2c9284");
+    }
+
+    //get playlist
+    public void getPlaylist(View view) {
+        sc.getPlaylist("5482dcf2c9284");
+    }
+
 
     /**
      * A placeholder fragment containing a simple view.
