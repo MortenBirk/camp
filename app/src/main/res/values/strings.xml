@@ -4,9 +4,24 @@
     <string name="app_name">CAMP</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_log_acc">LogAccActivity</string>
-    <string name ="logAcc_button">Start Logging</string>
+    <string name="logAcc_button">Start Logging</string>
+    <string name="title_activity_playlist_player">PlaylistPlayerActivity</string>
+    <string name="action_settings">Settings</string>
     <string name ="createUser_button">Create a user</string>
+
     <string name ="createPlaylist_button">Create a Playlist</string>
     <string name ="updatePlaylist_button">update a Playlist</string>
     <string name ="getPlaylist_button">Get a Playlist</string>
+
+
+
+    //Font awesome
+    <string name="fa_play">&#xf04b;</string>
+    <string name="fa_pause">&#xf04c;</string>
+    <string name="fa_stop">&#xf04d;</string>
+    <string name="fa_forward">&#xf04e;</string>
+    <string name="fa_backward">&#xf04a;</string>
+    <string name="fast_fast_forward">&#xf050;</string>
+    <string name="fast_fast_backward">&#xf049;</string>
+
 </resources>

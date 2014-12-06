@@ -113,6 +113,7 @@ public class ServerCommunicator {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.d("sc", "request worked");
+
                     Log.d("sc", response.toString());
                 }
             }, new Response.ErrorListener() {
