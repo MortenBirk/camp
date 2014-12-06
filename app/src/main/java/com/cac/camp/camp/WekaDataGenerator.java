@@ -1,16 +1,23 @@
 package com.cac.camp.camp;
 
+import android.content.res.AssetManager;
 import android.os.Debug;
 import android.os.Environment;
+import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -18,19 +25,27 @@ import weka.core.SparseInstance;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
+import weka.core.FastVector;
 
 /**
  * Created by jensemil on 28/11/14.
  */
 public class WekaDataGenerator {
 
-    public static void saveArff(List<DataWindow> dataWindows, String fileName, String className) throws IOException {
+    public static void saveArff(List<DataWindow> dataWindows, String fileName, String className) {
         Instances sparseDataset = createArff(dataWindows, className);
         ArffSaver arffSaverInstance = new ArffSaver();
         arffSaverInstance.setInstances(sparseDataset);
         File file = new File(Environment.getExternalStorageDirectory() + File.separator + fileName + ".arff");
-        arffSaverInstance.setFile(file);
-        arffSaverInstance.writeBatch();
+
+        // saving file
+        try {
+            arffSaverInstance.setFile(file);
+            arffSaverInstance.writeBatch();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static Instances createArff(List<DataWindow> windows, String className) {
@@ -40,23 +55,23 @@ public class WekaDataGenerator {
             windows.remove(0);
         }
 
-        ArrayList<Attribute> attributes;
+        FastVector attributes;
         Instances dataSet;
         double[] values;
-        attributes = new ArrayList<Attribute>();
+        attributes = new FastVector();
 
-        List<String> classNameList = new ArrayList<String>();
-        classNameList.add("running");
-        classNameList.add("walk");
+        FastVector classNameList = new FastVector();
+        classNameList.addElement("running");
+        classNameList.addElement("walk");
 
 
-        attributes.add(new Attribute("maxMag"));
-        attributes.add(new Attribute("minMag"));
-        attributes.add(new Attribute("integral"));
+        attributes.addElement(new Attribute("maxMag"));
+        attributes.addElement(new Attribute("minMag"));
+        attributes.addElement(new Attribute("integral"));
 
         Attribute classNames = new Attribute("class", classNameList);
 
-        attributes.add(classNames);
+        attributes.addElement(classNames);
 
         dataSet = new Instances("DataWindow", attributes, 0);
 
@@ -104,30 +119,54 @@ public class WekaDataGenerator {
     }
 
 
-    public static void classify(List<DataWindow> dataWindowsCopy, LogAccActivity activity) {
+    public static void classify(List<DataWindow> dataWindowsCopy, LogAccActivity activity, AssetManager assetMgr) {
+
+        for (DataWindow dw : dataWindowsCopy) {
+            Double d = dw.getMax();
+            Log.e("test", "maxMag: " + d);
+        }
+
+
 
         String rootPath = "";
-        Classifier cls = null;
+        J48 cls = new J48();
         try {
-            cls = (Classifier) weka.core.SerializationHelper.read(rootPath+"j48-walk-run-model.model");
+            ObjectInputStream ois = new ObjectInputStream(assetMgr.open(rootPath+"j48-walk-run-model.model"));
+            cls = (J48) ois.readObject();
+            ois.close();
+            //cls = (Classifier) weka.core.SerializationHelper.read(stream);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         //predict instance class values
         Instances originalTrain = createArff(dataWindowsCopy, "classify"); //load or create Instances to predict
+        originalTrain.setClassIndex(originalTrain.numAttributes() - 1);
 
-        //which instance to predict class value
-        int s1=0;
 
         //perform your prediction
-        //double value=cls.classifyInstance(originalTrain.instance(s1));
+        double value= 0;
+        String result;
+        List<String> results = new ArrayList<String>();
+
+        try {
+            for (int i = 0; i < dataWindowsCopy.size(); i++) {
+                value = cls.classifyInstance(originalTrain.instance(i));
+                String prediction = originalTrain.classAttribute().value((int)value);
+                result = "The predicted value of window " +
+                        Integer.toString(i) +
+                        ": " + prediction + "\n";
+                System.out.println(result);
+
+                results.add(result);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //get the name of the class value
-        String prediction= ""; //originalTrain.classAttribute().value((int)value);
 
-        System.out.println("The predicted value of instance "+
-                Integer.toString(s1)+
-                ": "+prediction);
+
+        activity.presentClassification(results);
     }
 }

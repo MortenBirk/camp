@@ -67,8 +67,8 @@ public class StartScreenActivity extends Activity {
                     .add(R.id.container, new StartViewFragment())
                     .commit();
         }
-        SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
-                new String[]{"user-read-private", "streaming"}, null, this);
+        //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
+        //        new String[]{"user-read-private", "streaming"}, null, this);
     }
 
     public void runLogAcc(View view) {

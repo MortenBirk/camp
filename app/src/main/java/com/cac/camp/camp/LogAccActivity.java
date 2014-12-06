@@ -3,6 +3,7 @@ package com.cac.camp.camp;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.res.AssetManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -33,6 +34,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     private Boolean isLogging = false;
     private Boolean isClassifying = false;
     private int numberOfLogs = 0;
+    private AssetManager assetMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
         dataPoints = new ArrayList<DataPoint>();
         dataWindows = new ArrayList<DataWindow>();
+
+        assetMgr = this.getAssets();
 
     }
 
@@ -92,14 +96,14 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.createArff("walk" + numberOfLogs, dataWindowsCopy, "walk");
+            WekaDataGenerator.saveArff(dataWindowsCopy, "walk" + numberOfLogs, "walk");
             this.clearData();
         }
 
     }
 
     public void classifyButtonClicked(View view) {
-        Button button = (Button) findViewById(R.id.walkButton);
+        Button button = (Button) findViewById(R.id.classifyButton);
         isClassifying = !isClassifying;
         if (isClassifying) {
             button.setText("Classifying...");
@@ -111,7 +115,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             // - stop the logging
             mSensorManager.unregisterListener(this);
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.classify(dataWindowsCopy, this);
+            WekaDataGenerator.classify(dataWindowsCopy, this, assetMgr);
         }
     }
 
@@ -121,6 +125,9 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             classS += s;
 
         Log.e("classify", classS);
+
+        TextView text = (TextView)findViewById(R.id.showAcc);
+        text.setText(classS);
     }
 
     private void clearData() {
