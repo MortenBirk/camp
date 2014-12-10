@@ -13,19 +13,29 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Running"
-        android:id="@+id/runButton"
-        android:onClick="runButtonClicked"
-        android:layout_below="@+id/showAcc"
-        android:layout_alignStart="@+id/walkButton"
-        android:layout_marginTop="64dp" />
+        android:text="Calm party"
+        android:id="@+id/calmButton"
+        android:onClick="calmButtonClicked"
+        android:layout_above="@+id/normalButton"
+        android:layout_alignStart="@+id/wildButton"
+        android:layout_marginBottom="49dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Walking"
-        android:id="@+id/walkButton"
-        android:onClick="walkButtonClicked"
+        android:text="Normal party"
+        android:id="@+id/normalButton"
+        android:onClick="normalButtonClicked"
+        android:layout_marginBottom="57dp"
+        android:layout_above="@+id/wildButton"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wild party"
+        android:id="@+id/wildButton"
+        android:onClick="wildButtonClicked"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="182dp" />
@@ -40,5 +50,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="85dp" />
+
+
 
 </RelativeLayout>

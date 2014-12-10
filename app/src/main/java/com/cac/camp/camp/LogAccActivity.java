@@ -59,21 +59,21 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     }
 
 
-    public void runButtonClicked(View view) {
-        Button button = (Button) findViewById(R.id.runButton);
+    public void calmButtonClicked(View view) {
+        Button button = (Button) findViewById(R.id.calmButton);
         isLogging = !isLogging;
         if (isLogging) {
-            button.setText("Stop log");
+            button.setText("Stop calm log");
             //TODO - start the logging again
             mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
 
         } else {
-            button.setText("Running");
+            button.setText("Calm party");
             //TODO - stop the logging
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.saveArff(dataWindowsCopy, "running" + numberOfLogs, "running");
+            WekaDataGenerator.saveArff(dataWindowsCopy, "calmParty" + numberOfLogs, "calmParty");
             this.clearData();
 
 
@@ -82,21 +82,41 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
     }
 
-    public void walkButtonClicked(View view) {
-        Button button = (Button) findViewById(R.id.walkButton);
+    public void normalButtonClicked(View view) {
+        Button button = (Button) findViewById(R.id.normalButton);
         isLogging = !isLogging;
         if (isLogging) {
-            button.setText("Stop log");
+            button.setText("Stop normal log");
             // - start the logging again
             mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
 
         } else {
-            button.setText("Walking");
+            button.setText("Normal party");
             // - stop the logging
             mSensorManager.unregisterListener(this);
             numberOfLogs++;
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
-            WekaDataGenerator.saveArff(dataWindowsCopy, "walk" + numberOfLogs, "walk");
+            WekaDataGenerator.saveArff(dataWindowsCopy, "normalParty" + numberOfLogs, "normalParty");
+            this.clearData();
+        }
+
+    }
+
+    public void wildButtonClicked(View view) {
+        Button button = (Button) findViewById(R.id.wildButton);
+        isLogging = !isLogging;
+        if (isLogging) {
+            button.setText("Stop wild log");
+            // - start the logging again
+            mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+
+        } else {
+            button.setText("Wild party");
+            // - stop the logging
+            mSensorManager.unregisterListener(this);
+            numberOfLogs++;
+            List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+            WekaDataGenerator.saveArff(dataWindowsCopy, "wildParty" + numberOfLogs, "wildParty");
             this.clearData();
         }
 
@@ -106,7 +126,7 @@ public class LogAccActivity extends Activity implements SensorEventListener{
         Button button = (Button) findViewById(R.id.classifyButton);
         isClassifying = !isClassifying;
         if (isClassifying) {
-            button.setText("Classifying...");
+            button.setText("Stop classifying");
             // - start the logging again
             mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
         }

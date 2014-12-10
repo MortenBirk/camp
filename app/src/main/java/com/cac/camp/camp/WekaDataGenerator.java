@@ -61,8 +61,9 @@ public class WekaDataGenerator {
         attributes = new FastVector();
 
         FastVector classNameList = new FastVector();
-        classNameList.addElement("running");
-        classNameList.addElement("walk");
+        classNameList.addElement("calmParty");
+        classNameList.addElement("normalParty");
+        classNameList.addElement("wildParty");
 
 
         attributes.addElement(new Attribute("maxMag"));
@@ -87,11 +88,12 @@ public class WekaDataGenerator {
                 // we are currently classifying
             } else {
 
-                if (className.equals("running")) {
-                    values[3] = 0; //OfValue(className);
-
+                if (className.equals("calmParty")) {
+                    values[3] = 0;
+                } else if (className.equals("normalParty")) {
+                    values[3] = 1;
                 } else {
-                    values[3] = 1; //OfValue(className);
+                    values[3] = 2;
                 }
 
             }
