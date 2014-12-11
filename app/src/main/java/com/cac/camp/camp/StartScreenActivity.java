@@ -31,6 +31,7 @@ import com.spotify.sdk.android.playback.PlayerState;
 
 public class StartScreenActivity extends Activity {
     private ServerCommunicator sc;
+    private BluetoothHandler blHandler = null;
 
     Player mPlayer;
 
@@ -69,6 +70,9 @@ public class StartScreenActivity extends Activity {
         }
         //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
         //        new String[]{"user-read-private", "streaming"}, null, this);
+
+        //Start the bluetooth
+        blHandler = new BluetoothHandler(this);
     }
 
     public void runLogAcc(View view) {
