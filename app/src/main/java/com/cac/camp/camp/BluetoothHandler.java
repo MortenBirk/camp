@@ -23,6 +23,7 @@ public class BluetoothHandler {
     private ArrayList<BluetoothDevice> deviceList = null; //Maybe we would like to connect to devices after discovery?
     private UUID uuid = UUID.fromString("baeaaee0-8087-11e4-b116-123b93f75cba");
     private String name = "CAMP";
+    private BluetoothServer blServer = null;
 
     //Used whenever a bluetooth device is found
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -31,6 +32,7 @@ public class BluetoothHandler {
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent.
+                Log.d("Bluetooth Handler", "Found a device");
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 try {
                     BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
@@ -54,6 +56,7 @@ public class BluetoothHandler {
         discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
         activity.startActivity(discoverableIntent);
+        blServer = new BluetoothServer(uuid, name, mBluetoothAdapter);
     }
 
     public void discoverDevices() {
@@ -64,5 +67,13 @@ public class BluetoothHandler {
         mBluetoothAdapter.startDiscovery();
 
     }
+
+    public void destroy() {
+        blServer.cancel();
+        blServer.interrupt();
+        blServer = null;
+
+    }
+
 
 }

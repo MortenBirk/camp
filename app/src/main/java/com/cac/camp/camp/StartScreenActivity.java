@@ -68,8 +68,8 @@ public class StartScreenActivity extends Activity {
                     .add(R.id.container, new StartViewFragment())
                     .commit();
         }
-        //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
-        //        new String[]{"user-read-private", "streaming"}, null, this);
+        SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
+                new String[]{"user-read-private", "streaming"}, null, this);
 
         //Start the bluetooth
         blHandler = new BluetoothHandler(this);
@@ -84,7 +84,12 @@ public class StartScreenActivity extends Activity {
     @Override
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
+        blHandler.destroy();
         super.onDestroy();
+    }
+
+    public void searchBluetooth(View view) {
+        blHandler.discoverDevices();
     }
 
     //Create a fixed user, no feedback is given
