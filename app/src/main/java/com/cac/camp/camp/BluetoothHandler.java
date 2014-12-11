@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class BluetoothHandler {
     private UUID uuid = UUID.fromString("baeaaee0-8087-11e4-b116-123b93f75cba");
     private String name = "CAMP";
     private BluetoothServer blServer = null;
+    private Context contex = null;
 
     //Used whenever a bluetooth device is found
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -33,6 +35,7 @@ public class BluetoothHandler {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent.
                 Log.d("Bluetooth Handler", "Found a device");
+                Toast.makeText(context, "Found device", Toast.LENGTH_SHORT).show();
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 try {
                     BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
@@ -45,9 +48,8 @@ public class BluetoothHandler {
     };
 
 
-
-
-    public BluetoothHandler(Activity activity) {
+    public BluetoothHandler(Activity activity, Context context) {
+        this.contex = context;
         deviceList = new ArrayList<BluetoothDevice>();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);

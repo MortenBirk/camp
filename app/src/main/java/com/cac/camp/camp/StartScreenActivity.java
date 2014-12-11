@@ -72,7 +72,7 @@ public class StartScreenActivity extends Activity {
                 new String[]{"user-read-private", "streaming"}, null, this);
 
         //Start the bluetooth
-        blHandler = new BluetoothHandler(this);
+        blHandler = new BluetoothHandler(this, getApplicationContext());
     }
 
     public void runLogAcc(View view) {

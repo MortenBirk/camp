@@ -38,6 +38,7 @@ public class BluetoothServer extends Thread {
             if (socket != null) {
                 // Do work to manage the connection (in a separate thread)
                 //manageConnectedSocket(socket);
+
                 try {
                     mmServerSocket.close();
                 } catch (IOException e) {
