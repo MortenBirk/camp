@@ -1,7 +1,12 @@
 package com.cac.camp.camp;
 
 import android.app.Activity;
+import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,9 +26,10 @@ import com.spotify.sdk.android.playback.PlayerState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class PlaylistPlayerActivity extends Activity implements ConnectionStateCallback, PlayerNotificationCallback {
+public class PlaylistPlayerActivity extends Activity implements ClientActivity, ConnectionStateCallback, PlayerNotificationCallback {
     Player mPlayer;
     List<String> staticPlaylist = new ArrayList<String>();
     List<Track> playlist = new ArrayList<Track>();
@@ -31,6 +37,12 @@ public class PlaylistPlayerActivity extends Activity implements ConnectionStateC
     Boolean isPlaying = false;
     Button playbutton;
     Track currentTrack;
+
+    private ServerCommunicator sc;
+
+    private String currentPlaylistId;
+    private List<String> currentUris;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +94,44 @@ public class PlaylistPlayerActivity extends Activity implements ConnectionStateC
         nextbutton.setTypeface(font);
         previousbutton.setTypeface(font);
 
+
+        // TODO - maybe shouldn't create playlist every time...
+        createPlaylist();
+
+    }
+
+    //Create playlist
+    public void createPlaylist() {
+
+        ArrayList<String> users = new ArrayList();
+        users.add("Emil");
+
+        sc.createPlaylist(users, "calmParty", this);
+    }
+
+    public void setCurrentPlaylist(String playlistId, List<String> uris) {
+        this.currentPlaylistId = playlistId;
+        this.currentUris = uris;
+    }
+
+    //Update playlist
+    public void updatePlaylist() {
+        ArrayList<String> users = new ArrayList();
+        users.add("Morten");
+
+        // TODO - should come from external users over bluetooth
+        List<String> classifications = new ArrayList<String>();
+        classifications.add("normalParty");
+
+        String classification = WekaDataGenerator.getMaxClass(classifications);
+
+        sc.updatePlaylist(users, classification, currentPlaylistId, this);
+
+    }
+
+    //get playlist
+    public void getPlaylist(View view) {
+        sc.getPlaylist(currentPlaylistId, this);
     }
 
     public void play(View view){
@@ -199,4 +249,11 @@ public class PlaylistPlayerActivity extends Activity implements ConnectionStateC
         Log.d("SpotifyIntentService", "Playback error received: " + errorType.name());
 
     }
+
+
+
+
+
+
+
 }

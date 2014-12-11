@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +32,7 @@ public class ServerCommunicator {
         queue = Volley.newRequestQueue(c);
     }
 
-    public void createUser(String id, ArrayList chillArray, ArrayList calmPartyArray, ArrayList normalPartyArray, ArrayList wildPartyArray) {
+    public void createUser(String id, ArrayList chillArray, ArrayList calmPartyArray, ArrayList normalPartyArray, ArrayList wildPartyArray, StartScreenActivity activity) {
         JSONObject json = new JSONObject();
         JSONObject values = new JSONObject();
         JSONArray chill = new JSONArray(chillArray);
@@ -52,10 +53,10 @@ public class ServerCommunicator {
             //Handle error in creating
         }
 
-        requestServer(json);
+        requestServer(json, activity);
     }
 
-    public void createPlaylist(ArrayList userList, String context) {
+    public void createPlaylist(ArrayList userList, String context, ClientActivity activity) {
         JSONObject json = new JSONObject();
         JSONArray users = new JSONArray(userList);
 
@@ -68,10 +69,10 @@ public class ServerCommunicator {
         } catch (JSONException e) {
             //Handle error in creating
         }
-        requestServer(json);
+        requestServer(json, activity);
     }
 
-    public void updatePlaylist(ArrayList userList, String context, String playlistID) {
+    public void updatePlaylist(ArrayList userList, String context, String playlistID, ClientActivity activity) {
         JSONObject json = new JSONObject();
         JSONArray users = new JSONArray(userList);
 
@@ -85,10 +86,10 @@ public class ServerCommunicator {
         } catch (JSONException e) {
             //Handle error in creating
         }
-        requestServer(json);
+        requestServer(json, activity);
     }
 
-    public void getPlaylist(String playlistID) {
+    public void getPlaylist(String playlistID, ClientActivity activity) {
         JSONObject json = new JSONObject();
 
         Log.d("sc", "UpdatePlaylist Called");
@@ -99,12 +100,12 @@ public class ServerCommunicator {
         } catch (JSONException e) {
             //Handle error in creating
         }
-        requestServer(json);
+        requestServer(json, activity);
     }
 
 
 
-    public void requestServer(JSONObject json) {
+    public void requestServer(JSONObject json, final ClientActivity activity) {
         Log.d("sc", "requestServer Called");
         Log.d("sc", json.toString());
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -113,6 +114,19 @@ public class ServerCommunicator {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.d("sc", "request worked");
+
+                    try {
+                        String id = response.getString("playlistID");
+
+                        JSONArray jsonPlaylist = response.getJSONArray("playlist");
+                        List<String> playlist = new ArrayList<String>();
+                        for(int i = 0; i < jsonPlaylist.length(); i++){
+                            playlist.add(jsonPlaylist.get(i).toString());
+                        }
+                        activity.setCurrentPlaylist(id, playlist);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                     Log.d("sc", response.toString());
                 }
@@ -130,5 +144,8 @@ public class ServerCommunicator {
 
         queue.add(jsObjRequest);
     }
+
+
+
 
 }

@@ -12,8 +12,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import weka.classifiers.Classifier;
@@ -167,8 +171,70 @@ public class WekaDataGenerator {
         }
 
         //get the name of the class value
-
-
         activity.presentClassification(results);
+    }
+
+
+    public static String classify(List<DataWindow> dataWindowsCopy, AssetManager assetMgr) {
+
+        String rootPath = "";
+        J48 cls = new J48();
+        try {
+            ObjectInputStream ois = new ObjectInputStream(assetMgr.open(rootPath+"j48-party-classifier.model"));
+            cls = (J48) ois.readObject();
+            ois.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //predict instance class values
+        Instances originalTrain = createArff(dataWindowsCopy, "classify"); //load or create Instances to predict
+        originalTrain.setClassIndex(originalTrain.numAttributes() - 1);
+
+
+        //perform your prediction
+        double value;
+
+        List<String> results = new ArrayList<String>();
+
+        try {
+            for (int i = 0; i < dataWindowsCopy.size(); i++) {
+                value = cls.classifyInstance(originalTrain.instance(i));
+                String prediction = originalTrain.classAttribute().value((int)value);
+
+                results.add(prediction);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return getMaxClass(results);
+    }
+
+    public static String getMaxClass(List<String> results) {
+        // count number of occurrences in data collection
+
+        Map<String, Integer> hm = new HashMap<String, Integer>();
+        for (String pred : results) {
+
+            if ( hm.containsKey(pred) ) {
+                Integer count = hm.get(pred);
+                hm.put(pred, count + 1);
+            } else {
+                hm.put(pred, 1);
+            }
+        }
+
+        // get the resulting most probable classification
+        String maxClass = hm.keySet().iterator().next();
+        for (Map.Entry<String, Integer> entry : hm.entrySet()) {
+            int currentCount = entry.getValue();
+            int maxCount = hm.get(maxClass);
+            if (currentCount > maxCount)
+                maxClass = entry.getKey();
+        }
+
+        return maxClass;
     }
 }

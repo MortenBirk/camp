@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,14 +19,18 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import weka.core.converters.*;
+import com.google.android.gms.location.LocationListener;
 
-public class LogAccActivity extends Activity implements SensorEventListener{
+public class LogAccActivity extends Activity implements SensorEventListener {
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -34,7 +39,10 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     private Boolean isLogging = false;
     private Boolean isClassifying = false;
     private int numberOfLogs = 0;
+
     private AssetManager assetMgr;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +64,11 @@ public class LogAccActivity extends Activity implements SensorEventListener{
 
         assetMgr = this.getAssets();
 
+
+
+
     }
+
 
 
     public void calmButtonClicked(View view) {
@@ -75,8 +87,6 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
             WekaDataGenerator.saveArff(dataWindowsCopy, "calmParty" + numberOfLogs, "calmParty");
             this.clearData();
-
-
 
         }
 
@@ -163,8 +173,6 @@ public class LogAccActivity extends Activity implements SensorEventListener{
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
-
-
     }
 
     @Override
@@ -196,6 +204,8 @@ public class LogAccActivity extends Activity implements SensorEventListener{
             dataWindows.add(new DataWindow(windowedDataPoints));
         }
     }
+
+
 
 
     /**
