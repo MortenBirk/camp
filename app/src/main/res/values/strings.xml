@@ -12,7 +12,7 @@
     <string name ="createPlaylist_button">Create a Playlist</string>
     <string name ="updatePlaylist_button">update a Playlist</string>
     <string name ="getPlaylist_button">Get a Playlist</string>
-
+    <string name ="bluetooth_button">Discover BL</string>
 
 
     //Font awesome

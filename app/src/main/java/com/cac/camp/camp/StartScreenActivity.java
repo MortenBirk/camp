@@ -47,6 +47,7 @@ import com.google.android.gms.location.LocationRequest;
 
 public class StartScreenActivity extends Activity implements ClientActivity, LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, SensorEventListener {
     private ServerCommunicator sc;
+    private BluetoothHandler blHandler = null;
 
     Player mPlayer;
 
@@ -120,14 +121,7 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
         super.onResume();
     }
 
-    @Override
-    public void onDestroy() {
-        mSensorManager.unregisterListener(this);
-        Spotify.destroyPlayer(this);
 
-
-        super.onDestroy();
-    }
 
 
     @Override
@@ -211,6 +205,8 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
 
+        //Start the bluetooth
+        blHandler = new BluetoothHandler(this, getApplicationContext());
     }
 
     public void runLogAcc(View view) {
@@ -219,7 +215,17 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
     }
 
 
+    @Override
+    protected void onDestroy() {
+        Spotify.destroyPlayer(this);
+        blHandler.destroy();
+        mSensorManager.unregisterListener(this);
+        super.onDestroy();
+    }
 
+    public void searchBluetooth(View view) {
+        blHandler.discoverDevices();
+    }
 
     //Create a fixed user, no feedback is given
     public void createUser(View view) {
@@ -237,11 +243,6 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
 
         sc.createUser("User4", chill, calm, normal, wild, this);
     }
-
-
-
-
-
 
 
     @Override
