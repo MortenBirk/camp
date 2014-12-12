@@ -277,7 +277,7 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
         String msg = "Updated Location: " +
                 Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
 
         //LatLng currentP = new LatLng(location.getLatitude(), location.getLongitude());

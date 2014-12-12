@@ -9,7 +9,11 @@ import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -25,7 +29,8 @@ public class BluetoothHandler {
     private UUID uuid = UUID.fromString("baeaaee0-8087-11e4-b116-123b93f75cba");
     private String name = "CAMP";
     private BluetoothServer blServer = null;
-    private Context contex = null;
+    private Context context = null;
+    private StartScreenActivity activity = null;
 
     //Used whenever a bluetooth device is found
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -35,21 +40,27 @@ public class BluetoothHandler {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent.
                 Log.d("Bluetooth Handler", "Found a device");
-                Toast.makeText(context, "Found device", Toast.LENGTH_SHORT).show();
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                BluetoothSocket socket = null;
+                String name = device.getName();
                 try {
-                    BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+                    socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
                     socket.connect();
+                    Toast.makeText(context, "Connected to device " + name, Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     Log.d("Bluetooth Handler", "Failed to create insecure connection");
+                    return;
                 }
+                //If we get here we should have a connection
+                handleConnection(socket);
             }
         }
     };
 
 
-    public BluetoothHandler(Activity activity, Context context) {
-        this.contex = context;
+    public BluetoothHandler(StartScreenActivity activity, Context context) {
+        this.activity = activity;
+        this.context = context;
         deviceList = new ArrayList<BluetoothDevice>();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -58,7 +69,31 @@ public class BluetoothHandler {
         discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
         activity.startActivity(discoverableIntent);
-        blServer = new BluetoothServer(uuid, name, mBluetoothAdapter);
+        blServer = new BluetoothServer(uuid, name, mBluetoothAdapter, context, activity);
+        blServer.start();
+    }
+
+    public void handleConnection(BluetoothSocket socket) {
+        Toast.makeText(context, "Client handled request", Toast.LENGTH_SHORT).show();
+        InputStream inStream = null;
+        try {
+            inStream = socket.getInputStream();
+        } catch (IOException e) {
+            Toast.makeText(context, "Could not create input stream", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        while(true) {
+            try {
+                // Read from the InputStream
+                BufferedReader socketReader = new BufferedReader(new InputStreamReader(inStream));
+                String msg = socketReader.readLine();
+                Toast.makeText(context, "Received msg: " + msg, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                break;
+            }
+        }
+
+
     }
 
     public void discoverDevices() {
