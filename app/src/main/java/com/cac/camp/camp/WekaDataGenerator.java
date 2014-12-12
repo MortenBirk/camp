@@ -54,7 +54,7 @@ public class WekaDataGenerator {
 
     public static Instances createArff(List<DataWindow> windows, String className) {
         //Remove the first and last element. It might be bad data
-        if(windows.size() > 2) {
+        if(windows.size() > 3) {
             windows.remove(windows.size()-1);
             windows.remove(0);
         }
@@ -90,6 +90,7 @@ public class WekaDataGenerator {
 
             if (className.equals("classify")) {
                 // we are currently classifying
+                values[3] = 0;
             } else {
 
                 if (className.equals("calmParty")) {
@@ -133,11 +134,10 @@ public class WekaDataGenerator {
         }
 
 
-
         String rootPath = "";
         J48 cls = new J48();
         try {
-            ObjectInputStream ois = new ObjectInputStream(assetMgr.open(rootPath+"j48-walk-run-model.model"));
+            ObjectInputStream ois = new ObjectInputStream(assetMgr.open(rootPath+"j48-party-classifier.model"));
             cls = (J48) ois.readObject();
             ois.close();
             //cls = (Classifier) weka.core.SerializationHelper.read(stream);
