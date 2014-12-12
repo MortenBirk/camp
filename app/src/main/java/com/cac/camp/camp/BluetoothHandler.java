@@ -74,7 +74,10 @@ public class BluetoothHandler {
     }
 
     public void handleConnection(BluetoothSocket socket) {
+
+        Log.d("HandleConnection", "inside handler");
         Toast.makeText(context, "Client handled request", Toast.LENGTH_SHORT).show();
+        /*
         InputStream inStream = null;
         try {
             inStream = socket.getInputStream();
@@ -92,7 +95,7 @@ public class BluetoothHandler {
                 break;
             }
         }
-
+        */
 
     }
 

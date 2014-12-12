@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -58,8 +59,9 @@ public class BluetoothServer extends Thread {
     }
 
     public void handleConnection(BluetoothSocket socket) {
+        Log.d("HandleConnection", "inside Server handler");
         Toast.makeText(context, "Server handled request", Toast.LENGTH_SHORT).show();
-        OutputStream outStream = null;
+        /*OutputStream outStream = null;
         try {
             outStream = socket.getOutputStream();
         } catch (IOException e) {
@@ -79,6 +81,7 @@ public class BluetoothServer extends Thread {
             Toast.makeText(context, "Could not close socket", Toast.LENGTH_SHORT).show();
             return;
         }
+        */
     }
 
     /** Will cancel the listening socket, and cause the thread to finish */
