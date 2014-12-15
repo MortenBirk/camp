@@ -180,6 +180,18 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     @Override
     public void deriveCommonContext(ArrayList<String> users, ArrayList<String> contexts) {
+        //If it is only you there, we have a chill playlist for you
+        if(users.size() <= 1) {
+            ArrayList<String> user = new ArrayList<String>();
+            user.add(USERID);
+            if (playlistID.equals("")) {
+                sc.createPlaylist(user, "chill", this);
+            } else {
+                sc.updatePlaylist(user, "chill", playlistID, this);
+            }
+        }
+
+        //If we have a party for many people instead
         if(contexts.isEmpty() || users.isEmpty()) {
             Log.d("WARNING", "Empty context or no users.");
             return;
