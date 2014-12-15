@@ -40,24 +40,38 @@ import com.spotify.sdk.android.playback.PlayerState;
 
 
 
-public class StartScreenActivity extends Activity implements ClientActivity, SensorEventListener {
+public class StartScreenActivity extends Activity implements ClientActivity {
     private ServerCommunicator sc;
     private BluetoothHandler blHandler = null;
     private LocationHandler locationhandler = null;
+    private SensorHandler sensorHandler = null;
 
     Player mPlayer;
-
-
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private List<DataPoint> dataPoints;
-    private List<DataWindow> dataWindows;
 
     private Boolean isClassifying = false;
 
     private AssetManager assetMgr;
-    private boolean isSlave;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        String CLIENT_ID = getString(R.string.CLIENT_ID);
+        String REDIRECT_URI = getString(R.string.REDIRECT_URI);
+        locationhandler = new LocationHandler(this);
+        sensorHandler = new SensorHandler(this);
+        sc = new ServerCommunicator(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_start_screen);
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new StartViewFragment())
+                    .commit();
+        }
+        //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
+        //        new String[]{"user-read-private", "streaming"}, null, this);
+
+        assetMgr = this.getAssets();
+
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -82,20 +96,18 @@ public class StartScreenActivity extends Activity implements ClientActivity, Sen
     public void sendAccUpdate() {
 
         // - stop the logging
-        List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(dataWindows);
+        List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
         String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr);
         Log.d("class", classification);
-
         // TODO - send to master unit over bluetooth
-
 
     }
 
     @Override
     public void onPause() {
-        mSensorManager.unregisterListener(this);
-        locationhandler.onPause();
 
+        locationhandler.onPause();
+        sensorHandler.onPause();
         super.onPause();
     }
 
@@ -103,73 +115,6 @@ public class StartScreenActivity extends Activity implements ClientActivity, Sen
     public void onResume() {
         locationhandler.onResume();
         super.onResume();
-    }
-
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        //Right in here is where you put code to read the current sensor values and
-        //update any views you might have that are displaying the sensor information
-        //You'd get accelerometer values like this:
-        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
-            return;
-        }
-
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-
-        DataPoint dp = new DataPoint(x, y, z);
-        dataPoints.add(dp);
-
-        if (dataPoints.size() % 64 == 0 && dataPoints.size() >= 128) {
-            Log.d("3", "Start: Add window");
-            int counter = dataWindows.size();
-            List<DataPoint> windowedDataPoints = dataPoints.subList(counter * 64, counter * 64 + 127);
-            dataWindows.add(new DataWindow(windowedDataPoints));
-        }
-
-        if (dataWindows.size() == 10) {
-            sendAccUpdate();
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        String CLIENT_ID = getString(R.string.CLIENT_ID);
-        String REDIRECT_URI = getString(R.string.REDIRECT_URI);
-        locationhandler = new LocationHandler(this);
-        sc = new ServerCommunicator(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start_screen);
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new StartViewFragment())
-                    .commit();
-        }
-        //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
-        //        new String[]{"user-read-private", "streaming"}, null, this);
-
-        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        //mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
-
-        dataPoints = new ArrayList<DataPoint>();
-        dataWindows = new ArrayList<DataWindow>();
-
-        assetMgr = this.getAssets();
-
-        isSlave = true;
-        if (isSlave) {
-            // - start the logging again
-            mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
-        }
-
     }
 
     public void runLogAcc(View view) {
@@ -182,7 +127,7 @@ public class StartScreenActivity extends Activity implements ClientActivity, Sen
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
         //blHandler.destroy();
-        mSensorManager.unregisterListener(this);
+        sensorHandler.onDestroy();
         super.onDestroy();
     }
 
