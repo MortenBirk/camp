@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.AssetManager;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -66,8 +67,18 @@ public class StartScreenActivity extends Activity implements ClientActivity {
                     .add(R.id.container, new StartViewFragment())
                     .commit();
         }
-        //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
-        //        new String[]{"user-read-private", "streaming"}, null, this);
+        SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
+                new String[]{"user-read-private", "streaming"}, null, this);
+
+        /*
+        Typeface font = Typeface.createFromAsset( getAssets(), "fontawesome-webfont.ttf" );
+        Button playbutton = (Button) findViewById(R.id.playbutton);
+        Button nextbutton = (Button) findViewById(R.id.nextbutton);
+        Button previousbutton = (Button) findViewById(R.id.previousbutton);
+        playbutton.setTypeface(font);
+        nextbutton.setTypeface(font);
+        previousbutton.setTypeface(font);
+        */
 
         assetMgr = this.getAssets();
 
@@ -78,10 +89,10 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         super.onNewIntent(intent);
         Uri uri = intent.getData();
         if (uri != null) {
-
             AuthenticationResponse response = SpotifyAuthentication.parseOauthResponse(uri);
             Spotify spotify = new Spotify(response.getAccessToken());
-            SpotifySingleton.getInstance().setSpotify(spotify);
+            SpotifySingleton.getInstance().init(this, spotify);
+
             Button button = (Button) findViewById(R.id.gotoPlaylistBtn);
             button.setEnabled(true);
 
@@ -89,7 +100,8 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     }
 
     public void gotoPlaylist(View view) {
-        startActivity(new Intent(this, PlaylistPlayerActivity.class));
+        //startActivity(new Intent(this, PlaylistPlayerActivity.class));
+        SpotifySingleton.getInstance().play("0aO9fmrQXxZi2ZOwtdtggZ");
     }
 
 
@@ -101,6 +113,14 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         Log.d("class", classification);
         // TODO - send to master unit over bluetooth
 
+    }
+
+    public String getNext() {
+        return "2Lsj1mNTA4032NIu0xZzdZ";
+    }
+
+    public String getPrev() {
+        return "2EuMREhmnIPQFaqXUH5yPu";
     }
 
     @Override
@@ -158,7 +178,23 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         // not needed here
     }
 
+    public void play(View view) {
+        SpotifySingleton spotify = SpotifySingleton.getInstance();
+        if (spotify.isPlaying()) {
+            spotify.stop();
+        } else {
+            spotify.play(this.getNext());
+        }
 
+    }
+
+    public void next(View view) {
+        SpotifySingleton.getInstance().play(this.getNext());
+    }
+
+    public void previous(View view) {
+        SpotifySingleton.getInstance().play(this.getPrev());
+    }
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -171,9 +207,20 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_start_screen, container, false);
+
+
+
             return rootView;
         }
     }
 
+    public void nowPlayingHandler(Track t) {
+        TextView song = (TextView) findViewById(R.id.songview);
+        TextView artist = (TextView) findViewById(R.id.artistview);
+
+        song.setText(t.getSong());
+        artist.setText(t.getArtist());
+
+    }
 
 }

@@ -28,4 +28,12 @@ public class Track {
     public String toString() {
         return name+" by "+artist;
     }
+
+    public String getArtist() {
+        return this.artist;
+    }
+
+    public String getSong() {
+        return this.name;
+    }
 }

@@ -24,7 +24,7 @@ public class SpotifyAPIConnector extends APIConnector {
     }
 
     //Get request
-    public void getTrackFromID(final String id, final PlaylistPlayerActivity activity){
+    public void getTrackFromID(final String id){
         String url = baseURL+"tracks/"+id;
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -40,7 +40,7 @@ public class SpotifyAPIConnector extends APIConnector {
                             String artistName = artist.getString("name");
                             Log.e("sc", songName + " by " + artistName);
                             Track track = new Track(id,songName,artistName);
-                            activity.handleTrackResponse(track);
+                            SpotifySingleton.getInstance().handleTrackResponse(track);
 
 
                         } catch (JSONException e){
