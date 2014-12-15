@@ -58,7 +58,6 @@ public class SensorHandler implements SensorEventListener {
         dataPoints.add(dp);
 
         if (dataPoints.size() % 64 == 0 && dataPoints.size() >= 128) {
-            Log.d("3", "Start: Add window");
             int counter = dataWindows.size();
             List<DataPoint> windowedDataPoints = dataPoints.subList(counter * 64, counter * 64 + 127);
             dataWindows.add(new DataWindow(windowedDataPoints));
@@ -68,6 +67,13 @@ public class SensorHandler implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    public void onResume() {
+        if (isSlave) {
+            // - start the logging again
+            mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     public void onPause() {

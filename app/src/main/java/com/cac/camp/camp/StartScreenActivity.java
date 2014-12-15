@@ -46,9 +46,13 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     private LocationHandler locationhandler = null;
     private SensorHandler sensorHandler = null;
 
-    Player mPlayer;
+    //This is our playlist
+    private ArrayList<String> playlist;
+    private String playlistID = "";
 
     private Boolean isClassifying = false;
+
+    private final String USERID = "Birk";
 
     private AssetManager assetMgr;
 
@@ -59,6 +63,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         locationhandler = new LocationHandler(this);
         sensorHandler = new SensorHandler(this);
         sc = new ServerCommunicator(this);
+        playlist = new ArrayList<String>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
         if (savedInstanceState == null) {
@@ -93,16 +98,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     }
 
 
-    public void sendAccUpdate() {
-
-        // - stop the logging
-        List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
-        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr);
-        Log.d("class", classification);
-        // TODO - send to master unit over bluetooth
-
-    }
-
     @Override
     public void onPause() {
 
@@ -114,6 +109,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     @Override
     public void onResume() {
         locationhandler.onResume();
+        sensorHandler.onResume();
         super.onResume();
     }
 
@@ -131,9 +127,24 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         super.onDestroy();
     }
 
-
+    //This method sends a message to the server, about our context and position.
     public void updateContextAndPosition(View view) {
-        sc.updateContextAndPosition("morten");
+        //Get position
+        String lat = Double.toString(locationhandler.getLat());
+        String lon = Double.toString(locationhandler.getLon());
+        //Get context
+        List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
+        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr);
+        String confidence = "1"; //Currently this is faked
+        Log.d("class", classification);
+        sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
+    }
+
+    public void getContexts(View view) {
+        //Get position
+        String lat = Double.toString(locationhandler.getLat());
+        String lon = Double.toString(locationhandler.getLon());
+        sc.getContexts(lat, lon, this);
     }
 
     //Create a fixed user, no feedback is given
@@ -154,8 +165,21 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     }
 
     @Override
-    public void setCurrentPlaylist(String id, List<String> playlist) {
-        // not needed here
+    public void setCurrentPlaylist(String id, ArrayList<String> playlist) {
+        playlistID = id;
+        this.playlist = playlist;
+        Log.d("done", "playlist created");
+    }
+
+    @Override
+    public void deriveCommonContext(ArrayList<String> users, ArrayList<String> contexts) {
+        String context = WekaDataGenerator.getMaxClass(contexts);
+        if (playlistID.equals("")) {
+            //sc.createPlaylist(users, context, this);
+        } else {
+            //sc.updatePlaylist(users, context, playlistID, this);
+        }
+        Log.d("derived", context);
     }
 
 

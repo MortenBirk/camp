@@ -1,5 +1,6 @@
 package com.cac.camp.camp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,5 +8,7 @@ import java.util.List;
  */
 public interface ClientActivity {
 
-    public void setCurrentPlaylist(String id, List<String> playlist);
+    public void setCurrentPlaylist(String id, ArrayList<String> playlist);
+    //Used to calculate the context and users to create a playlist for.
+    public void deriveCommonContext(ArrayList<String> users, ArrayList<String> contexts);
 }

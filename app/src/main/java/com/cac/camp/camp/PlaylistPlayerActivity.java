@@ -251,9 +251,13 @@ public class PlaylistPlayerActivity extends Activity implements ClientActivity, 
     }
 
 
+    @Override
+    public void setCurrentPlaylist(String id, ArrayList<String> playlist) {
 
+    }
 
+    @Override
+    public void deriveCommonContext(ArrayList<String> users, ArrayList<String> contexts) {
 
-
-
+    }
 }

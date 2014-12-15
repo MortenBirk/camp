@@ -24,6 +24,9 @@ public class LocationHandler implements LocationListener, GooglePlayServicesClie
     private static final long FASTEST_INTERVAL = 1000;
     private LocationRequest mLocationRequest;
 
+    private double lat = 0;
+    private double lon = 0;
+
     public LocationHandler(Activity activity) {
         this.activity = activity;
         mLocationClient = new LocationClient(activity, this, this);
@@ -54,9 +57,8 @@ public class LocationHandler implements LocationListener, GooglePlayServicesClie
 
     @Override
     public void onLocationChanged(Location location) {
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
+        lat = location.getLatitude();
+        lon = location.getLongitude();
     }
 
     @Override
@@ -77,6 +79,14 @@ public class LocationHandler implements LocationListener, GooglePlayServicesClie
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Toast.makeText(activity, "Failed conn to Loc Cli",
                 Toast.LENGTH_SHORT).show();
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
     }
 
 }
