@@ -170,22 +170,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         sc.getContexts(lat, lon, this);
     }
 
-    //Create a fixed user, no feedback is given
-    public void createUser(View view) {
-        ArrayList<String> chill = new ArrayList();
-        chill.add("God Sang");
-
-        ArrayList<String> calm = new ArrayList();
-        calm.add("rolig Sang");
-
-        ArrayList<String> normal = new ArrayList();
-        normal.add("normal Sang");
-
-        ArrayList<String> wild = new ArrayList();
-        wild.add("Vild Sang");
-
-        sc.createUser("User4", chill, calm, normal, wild, this);
-    }
 
     @Override
     public void setCurrentPlaylist(String id, ArrayList<String> playlist) {
@@ -196,11 +180,15 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     @Override
     public void deriveCommonContext(ArrayList<String> users, ArrayList<String> contexts) {
+        if(contexts.isEmpty() || users.isEmpty()) {
+            Log.d("WARNING", "Empty context or no users.");
+            return;
+        }
         String context = WekaDataGenerator.getMaxClass(contexts);
         if (playlistID.equals("")) {
-            //sc.createPlaylist(users, context, this);
+            sc.createPlaylist(users, context, this);
         } else {
-            //sc.updatePlaylist(users, context, playlistID, this);
+            sc.updatePlaylist(users, context, playlistID, this);
         }
         Log.d("derived", context);
     }

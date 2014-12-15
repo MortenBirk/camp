@@ -49,7 +49,6 @@ public class ServerCommunicator {
     }
 
     public void getContexts(String lat, String lon, StartScreenActivity activity) {
-        Log.d("call", "getContexts");
         JSONObject json = new JSONObject();
         try {
             json.put("type", "getUsersAndContexts");
@@ -95,6 +94,8 @@ public class ServerCommunicator {
             json.put("users", users);
         } catch (JSONException e) {
             //Handle error in creating
+            Log.d("ERROR", "CREATE PLAYLIST ERROR");
+            return;
         }
         requestServer(json, activity);
     }
@@ -111,6 +112,8 @@ public class ServerCommunicator {
             json.put("playlistID", playlistID);
         } catch (JSONException e) {
             //Handle error in creating
+            Log.d("ERROR", "UPDATE PLAYLIST ERROR");
+            return;
         }
         requestServer(json, activity);
     }
@@ -131,7 +134,6 @@ public class ServerCommunicator {
 
 
     public void requestServer(JSONObject json, final ClientActivity activity) {
-        Log.d("log", "request called");
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
             (Request.Method.POST, url, json, new Response.Listener<JSONObject>() {
 
