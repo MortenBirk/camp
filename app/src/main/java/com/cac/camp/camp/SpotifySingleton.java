@@ -103,8 +103,8 @@ public class SpotifySingleton implements ConnectionStateCallback, PlayerNotifica
 
     @Override
     public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-        if ( eventType.name().equals("TRACK_END") ) {
-                //this.play(parent.getNext());
+        if ( eventType.name().equals("END_OF_CONTEXT") ) {
+                this.play(parent.getNext());
         } else if (eventType.name().equals("PAUSE")) {
             isPlaying = false;
         } else if (eventType.name().equals("PLAY")) {

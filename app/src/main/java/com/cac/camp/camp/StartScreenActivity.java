@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.spotify.sdk.android.Spotify;
@@ -111,11 +112,12 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
 
     public String getNext() {
-        return "2Lsj1mNTA4032NIu0xZzdZ";
+        return this.getPrev();
     }
 
     public String getPrev() {
-        return "2EuMREhmnIPQFaqXUH5yPu";
+        Random random = new Random();
+        return playlist.get(random.nextInt(playlist.size()));
     }
 
 
