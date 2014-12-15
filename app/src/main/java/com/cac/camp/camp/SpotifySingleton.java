@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by nikolaiollegaard on 03/12/14.
  */
-public class SpotifySingleton implements ClientActivity, ConnectionStateCallback, PlayerNotificationCallback {
+public class SpotifySingleton implements ConnectionStateCallback, PlayerNotificationCallback {
     private static SpotifySingleton ourInstance = new SpotifySingleton();
 
     public static SpotifySingleton getInstance() {
@@ -69,11 +69,6 @@ public class SpotifySingleton implements ClientActivity, ConnectionStateCallback
     public void handleTrackResponse(Track t) {
         currentTrack = t;
         parent.nowPlayingHandler(t);
-    }
-
-    @Override
-    public void setCurrentPlaylist(String id, List<String> playlist) {
-
     }
 
     @Override
