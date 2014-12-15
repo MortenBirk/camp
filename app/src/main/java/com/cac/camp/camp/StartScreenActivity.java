@@ -58,6 +58,9 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     private AssetManager assetMgr;
 
+    private SendUpdated sendUpdated = null;
+    private RequestUpdates requestUpdates = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String CLIENT_ID = getString(R.string.CLIENT_ID);
@@ -66,6 +69,9 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         sensorHandler = new SensorHandler(this);
         sc = new ServerCommunicator(this);
         playlist = new ArrayList<String>();
+        sendUpdated = new SendUpdated(this);
+        sendUpdated.start();
+        requestUpdates = new RequestUpdates(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
         if (savedInstanceState == null) {
@@ -146,6 +152,8 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
         //blHandler.destroy();
+        sendUpdated.interrupt();
+        sendUpdated = null;
         sensorHandler.onDestroy();
         super.onDestroy();
     }
@@ -163,13 +171,43 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
     }
 
+    public void updateContextAndPosition() {
+        //Get position
+        Log.d("Log", "Updated context");
+        String lat = Double.toString(locationhandler.getLat());
+        String lon = Double.toString(locationhandler.getLon());
+        //Get context
+        List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
+        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr);
+        String confidence = "1"; //Currently this is faked
+        Log.d("class", classification);
+        sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
+    }
+
     public void getContexts(View view) {
         //Get position
         String lat = Double.toString(locationhandler.getLat());
         String lon = Double.toString(locationhandler.getLon());
         sc.getContexts(lat, lon, this);
+        startRequestUpdates();
     }
 
+    public void startRequestUpdates() {
+        if (requestUpdates.isAlive()) {
+            Log.d("Log", "Thread is alive already");
+            return;
+        }
+        requestUpdates.start();
+        Log.d("Log", "Started Thread");
+    }
+
+    public void getContexts() {
+        //Get position
+        String lat = Double.toString(locationhandler.getLat());
+        String lon = Double.toString(locationhandler.getLon());
+        sc.getContexts(lat, lon, this);
+        Log.d("Log", "Got Updated playlist");
+    }
 
     @Override
     public void setCurrentPlaylist(String id, ArrayList<String> playlist) {
