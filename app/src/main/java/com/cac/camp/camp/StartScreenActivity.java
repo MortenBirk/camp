@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.google.android.gms.location.LocationListener;
 import com.spotify.sdk.android.Spotify;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.authentication.SpotifyAuthentication;
@@ -39,27 +38,14 @@ import com.spotify.sdk.android.playback.Player;
 import com.spotify.sdk.android.playback.PlayerNotificationCallback;
 import com.spotify.sdk.android.playback.PlayerState;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationRequest;
 
 
-public class StartScreenActivity extends Activity implements ClientActivity, LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, SensorEventListener {
+public class StartScreenActivity extends Activity implements ClientActivity, SensorEventListener {
     private ServerCommunicator sc;
     private BluetoothHandler blHandler = null;
+    private LocationHandler locationhandler = null;
 
     Player mPlayer;
-
-
-    private LocationClient mLocationClient;
-
-    // Update frequency in milliseconds
-    private static final long UPDATE_INTERVAL = 3000;
-    // A fast frequency ceiling in milliseconds
-    private static final long FASTEST_INTERVAL = 1000;
-    // Define an object that holds accuracy and frequency parameters
-    LocationRequest mLocationRequest;
 
 
     private SensorManager mSensorManager;
@@ -108,20 +94,16 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
     @Override
     public void onPause() {
         mSensorManager.unregisterListener(this);
-        if (mLocationClient.isConnected()) {
-            mLocationClient.disconnect();
-        }
+        locationhandler.onPause();
 
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        mLocationClient.connect();
+        locationhandler.onResume();
         super.onResume();
     }
-
-
 
 
     @Override
@@ -161,6 +143,7 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
     protected void onCreate(Bundle savedInstanceState) {
         String CLIENT_ID = getString(R.string.CLIENT_ID);
         String REDIRECT_URI = getString(R.string.REDIRECT_URI);
+        locationhandler = new LocationHandler(this);
         sc = new ServerCommunicator(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
@@ -169,8 +152,8 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
                     .add(R.id.container, new StartViewFragment())
                     .commit();
         }
-        SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
-                new String[]{"user-read-private", "streaming"}, null, this);
+        //SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
+        //        new String[]{"user-read-private", "streaming"}, null, this);
 
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -181,32 +164,12 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
 
         assetMgr = this.getAssets();
 
-        mLocationClient = new LocationClient(this, this, this);
-        mLocationClient.connect();
-        createLocationRequest();
-
-
         isSlave = true;
         if (isSlave) {
             // - start the logging again
             mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
         }
 
-
-    }
-
-    private void createLocationRequest() {
-        // Create the LocationRequest object
-        mLocationRequest = LocationRequest.create();
-        // Use high accuracy
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        //Set the update interval
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-
-
-        //Start the bluetooth
-        blHandler = new BluetoothHandler(this, getApplicationContext());
     }
 
     public void runLogAcc(View view) {
@@ -218,13 +181,14 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
     @Override
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
-        blHandler.destroy();
+        //blHandler.destroy();
         mSensorManager.unregisterListener(this);
         super.onDestroy();
     }
 
-    public void searchBluetooth(View view) {
-        blHandler.discoverDevices();
+
+    public void updateContextAndPosition(View view) {
+        sc.updateContextAndPosition("morten");
     }
 
     //Create a fixed user, no feedback is given
@@ -242,47 +206,6 @@ public class StartScreenActivity extends Activity implements ClientActivity, Loc
         wild.add("Vild Sang");
 
         sc.createUser("User4", chill, calm, normal, wild, this);
-    }
-
-
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-
-
-        if (mLocationClient.isConnected()) {
-            mLocationClient.requestLocationUpdates(mLocationRequest, this);
-            Toast.makeText(this, "Connected Loc Client", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onDisconnected() {
-        // Display the connection status
-        Toast.makeText(this, "Disconnected Loc Client",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Display the connection status
-        Toast.makeText(this, "Failed conn to Loc Cli",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        // Report to the UI that the location was updated
-
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
-        //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
-
-        //LatLng currentP = new LatLng(location.getLatitude(), location.getLongitude());
-
-
     }
 
     @Override

@@ -26,7 +26,7 @@ public class BluetoothHandler {
     private IntentFilter filter = null;
     private Intent discoverableIntent = null;
     private ArrayList<BluetoothDevice> deviceList = null; //Maybe we would like to connect to devices after discovery?
-    private UUID uuid = UUID.fromString("baeaaee0-8087-11e4-b116-123b93f75cba");
+    private UUID uuid = UUID.fromString("dcb8cbb4-b6de-4d5e-893b-3635a1c6a4e4");
     private String name = "CAMP";
     private BluetoothServer blServer = null;
     private Context context = null;
@@ -45,6 +45,7 @@ public class BluetoothHandler {
                 String name = device.getName();
                 try {
                     socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+
                     socket.connect();
                     Toast.makeText(context, "Connected to device " + name, Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
@@ -77,7 +78,7 @@ public class BluetoothHandler {
 
         Log.d("HandleConnection", "inside handler");
         Toast.makeText(context, "Client handled request", Toast.LENGTH_SHORT).show();
-        /*
+
         InputStream inStream = null;
         try {
             inStream = socket.getInputStream();
@@ -95,7 +96,7 @@ public class BluetoothHandler {
                 break;
             }
         }
-        */
+
 
     }
 

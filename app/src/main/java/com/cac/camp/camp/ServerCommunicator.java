@@ -32,6 +32,11 @@ public class ServerCommunicator {
         queue = Volley.newRequestQueue(c);
     }
 
+    public void updateContextAndPosition(String id) {
+
+
+    }
+
     public void createUser(String id, ArrayList chillArray, ArrayList calmPartyArray, ArrayList normalPartyArray, ArrayList wildPartyArray, StartScreenActivity activity) {
         JSONObject json = new JSONObject();
         JSONObject values = new JSONObject();
