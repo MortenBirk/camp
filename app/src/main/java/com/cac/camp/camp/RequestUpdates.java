@@ -15,12 +15,12 @@ public class RequestUpdates extends Thread {
 
     public void run() {
         while (true) {
+            activity.getContexts();
             try {
                 Thread.sleep(30000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            activity.getContexts();
         }
     }
 }

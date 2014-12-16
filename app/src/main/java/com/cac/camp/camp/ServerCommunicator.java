@@ -162,7 +162,7 @@ public class ServerCommunicator {
                             }
                             activity.deriveCommonContext(usersList, contextsList);
                         } catch (JSONException f) {
-                            Log.d("ignored response", "Response was ignored no need");
+                            //Log.d("ignored response", "Response was ignored no need");
                         }
                     }
 

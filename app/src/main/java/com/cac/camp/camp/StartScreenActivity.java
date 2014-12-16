@@ -51,20 +51,29 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     //This is our playlist
     private ArrayList<String> playlist;
     private String playlistID = "";
+    private ArrayList<Position> locations;
 
     private Boolean isClassifying = false;
 
     private final String USERID = "Birk";
+    private String currentContext = "";
 
     private AssetManager assetMgr;
 
     private SendUpdated sendUpdated = null;
     private RequestUpdates requestUpdates = null;
 
+    private TextView showContext = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String CLIENT_ID = getString(R.string.CLIENT_ID);
         String REDIRECT_URI = getString(R.string.REDIRECT_URI);
+        locations = new ArrayList<Position>();
+        locations.add(new Position(56.171922, 10.188691)); //Babbage
+        locations.add(new Position(56.1723, 10.188276));   //Fredagsbar.dk (IMV)
+        locations.add(new Position(56.159984,10.198749)); //Sehrøgade
         locationhandler = new LocationHandler(this);
         sensorHandler = new SensorHandler(this);
         sc = new ServerCommunicator(this);
@@ -79,6 +88,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
                     .add(R.id.container, new StartViewFragment())
                     .commit();
         }
+        showContext = (TextView)findViewById(R.id.showContext);
         SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
                 new String[]{"user-read-private", "streaming"}, null, this);
 
@@ -185,10 +195,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     }
 
     public void getContexts(View view) {
-        //Get position
-        String lat = Double.toString(locationhandler.getLat());
-        String lon = Double.toString(locationhandler.getLon());
-        sc.getContexts(lat, lon, this);
         startRequestUpdates();
     }
 
@@ -205,8 +211,19 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         //Get position
         String lat = Double.toString(locationhandler.getLat());
         String lon = Double.toString(locationhandler.getLon());
-        sc.getContexts(lat, lon, this);
-        Log.d("Log", "Got Updated playlist");
+        boolean atParty = false;
+        for(Position p : locations) {
+            float[] result = new float[100];
+            Location.distanceBetween(locationhandler.getLat(), locationhandler.getLon(), p.getLattitude(), p.getLongitude(), result);
+            if(result[0] < 15) {
+                atParty = true;
+            }
+        }
+        if(atParty) {
+            sc.getContexts(lat, lon, this);
+        } else {
+            createChillPlaylist();
+        }
     }
 
     @Override
@@ -216,17 +233,24 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         Log.d("done", "playlist created");
     }
 
+    //If you are alone, create the chill playlist
+    private void createChillPlaylist() {
+        ArrayList<String> user = new ArrayList<String>();
+        user.add(USERID);
+        currentContext = "chill";
+        showContext.setText(currentContext);
+        if (playlistID.equals("")) {
+            sc.createPlaylist(user, "chill", this);
+        } else {
+            sc.updatePlaylist(user, "chill", playlistID, this);
+        }
+    }
+
     @Override
     public void deriveCommonContext(ArrayList<String> users, ArrayList<String> contexts) {
         //If it is only you there, we have a chill playlist for you
         if(users.size() <= 1) {
-            ArrayList<String> user = new ArrayList<String>();
-            user.add(USERID);
-            if (playlistID.equals("")) {
-                sc.createPlaylist(user, "chill", this);
-            } else {
-                sc.updatePlaylist(user, "chill", playlistID, this);
-            }
+            createChillPlaylist();
         }
 
         //If we have a party for many people instead
@@ -235,12 +259,13 @@ public class StartScreenActivity extends Activity implements ClientActivity {
             return;
         }
         String context = WekaDataGenerator.getMaxClass(contexts);
+        currentContext = context;
+        showContext.setText(currentContext);
         if (playlistID.equals("")) {
             sc.createPlaylist(users, context, this);
         } else {
             sc.updatePlaylist(users, context, playlistID, this);
         }
-        Log.d("derived", context);
     }
 
     public void play(View view) {

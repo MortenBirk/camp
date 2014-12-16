@@ -26,6 +26,7 @@ public class LocationHandler implements LocationListener, GooglePlayServicesClie
 
     private double lat = 0;
     private double lon = 0;
+    private Location location = null;
 
     public LocationHandler(Activity activity) {
         this.activity = activity;
@@ -59,6 +60,11 @@ public class LocationHandler implements LocationListener, GooglePlayServicesClie
     public void onLocationChanged(Location location) {
         lat = location.getLatitude();
         lon = location.getLongitude();
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     @Override
