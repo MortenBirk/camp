@@ -55,7 +55,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     private Boolean isClassifying = false;
 
-    private final String USERID = "Birk";
+    private String USERID = "Birk";
     private String currentContext = "";
 
     private AssetManager assetMgr;
@@ -68,8 +68,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String CLIENT_ID = getString(R.string.CLIENT_ID);
-        String REDIRECT_URI = getString(R.string.REDIRECT_URI);
         locations = new ArrayList<Position>();
         locations.add(new Position(56.171922, 10.188691)); //Babbage
         locations.add(new Position(56.1723, 10.188276));   //Fredagsbar.dk (IMV)
@@ -89,36 +87,19 @@ public class StartScreenActivity extends Activity implements ClientActivity {
                     .commit();
         }
         showContext = (TextView)findViewById(R.id.showContext);
-        SpotifyAuthentication.openAuthWindow(CLIENT_ID, "token", REDIRECT_URI,
-                new String[]{"user-read-private", "streaming"}, null, this);
 
-        /*
-        Typeface font = Typeface.createFromAsset( getAssets(), "fontawesome-webfont.ttf" );
-        Button playbutton = (Button) findViewById(R.id.playbutton);
-        Button nextbutton = (Button) findViewById(R.id.nextbutton);
-        Button previousbutton = (Button) findViewById(R.id.previousbutton);
-        playbutton.setTypeface(font);
-        nextbutton.setTypeface(font);
-        previousbutton.setTypeface(font);
-        */
+        SpotifySingleton.getInstance().setPlayerActivity(this);
+
+        //Gets user from intent
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String value = extras.getString("USER_ID");
+            this.USERID = value;
+            Log.d("INTENT", this.USERID);
+        }
 
         assetMgr = this.getAssets();
 
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Uri uri = intent.getData();
-        if (uri != null) {
-            AuthenticationResponse response = SpotifyAuthentication.parseOauthResponse(uri);
-            Spotify spotify = new Spotify(response.getAccessToken());
-            SpotifySingleton.getInstance().init(this, spotify);
-
-            Button button = (Button) findViewById(R.id.gotoPlaylistBtn);
-            button.setEnabled(true);
-
-        }
     }
 
     public void gotoPlaylist(View view) {

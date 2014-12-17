@@ -1,5 +1,6 @@
 package com.cac.camp.camp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -32,10 +33,9 @@ public class SpotifySingleton implements ConnectionStateCallback, PlayerNotifica
         return this.isPlaying;
     }
 
-    public void init(StartScreenActivity parent, Spotify spotify) {
+    public void init(Activity activity, Spotify spotify) {
         this.spotify = spotify;
-        this.parent = parent;
-        Context context = parent.getBaseContext();
+        Context context = activity.getBaseContext();
         this.api = new SpotifyAPIConnector(context);
         mPlayer = spotify.getPlayer(context, "CAMP", this, new Player.InitializationObserver() {
             @Override
@@ -49,6 +49,10 @@ public class SpotifySingleton implements ConnectionStateCallback, PlayerNotifica
                 Log.e("SpotifyIntentService", "Could not initialize player: " + throwable.getMessage());
             }
         });
+    }
+
+    public void setPlayerActivity(StartScreenActivity activity) {
+        this.parent = activity;
     }
 
     public void play(String uri) {
