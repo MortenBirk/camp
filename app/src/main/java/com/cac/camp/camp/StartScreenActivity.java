@@ -192,22 +192,21 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     public void getContexts() {
         //Get position
-        Log.d("Status", "gettting contexts");
         String lat = Double.toString(locationhandler.getLat());
         String lon = Double.toString(locationhandler.getLon());
         boolean atParty = false;
         for(Position p : locations) {
             float[] result = new float[100];
             Location.distanceBetween(locationhandler.getLat(), locationhandler.getLon(), p.getLattitude(), p.getLongitude(), result);
-            if(result[0] < 15) {
+            if(result[0] < 100) {
                 atParty = true;
             }
         }
         if(atParty) {
-            Log.d("Status", "NOT at party");
+            Log.d("Status", "YES at party");
             sc.getContexts(lat, lon, this);
         } else {
-            Log.d("Status", "YES at party");
+            Log.d("Status", "NOT at party");
             createChillPlaylist();
         }
     }
@@ -235,6 +234,8 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         //If it is only you there, we have a chill playlist for you
         if(users.size() <= 1) {
             createChillPlaylist();
+            Log.d("Party status", "you are alone");
+            return;
         }
 
         //If we have a party for many people instead

@@ -20,7 +20,7 @@ public class FileLogger{
             outputStream = context.openFileOutput(fileName, Context.MODE_APPEND);
             outputStream.write(s.getBytes());
             outputStream.close();
-            Log.d("fileLog", "Logged HMM file");
+            //Log.d("fileLog", "Logged HMM file");
         } catch (Exception e) {
             e.printStackTrace();
         }
