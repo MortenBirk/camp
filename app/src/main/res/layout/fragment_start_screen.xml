@@ -15,14 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <Button android:id="@+id/gotoPlaylistBtn"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="PLAY TEST SONG"
-        android:onClick="gotoPlaylist"
-        android:enabled="false"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
+
 
     <TextView
         android:text="@string/show_context"
@@ -30,25 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/update_context_and_position"
-        android:onClick="updateContextAndPosition"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/update_context_and_position_button"
-        android:layout_below="@+id/get_contexts_button"
-        android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/get_contexts"
-        android:onClick="getContexts"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/get_contexts_button"
-        android:layout_below="@+id/log_acc_button"
-        android:layout_alignStart="@+id/log_acc_button" />
 
     <com.cac.camp.camp.ButtonFontAwesome
         style="?android:attr/buttonStyleSmall"
