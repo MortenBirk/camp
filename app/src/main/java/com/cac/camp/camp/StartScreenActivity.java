@@ -100,6 +100,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
         assetMgr = this.getAssets();
 
+        FileLogger.initFile(this, "wekaoutput.log");
     }
 
     public void gotoPlaylist(View view) {
@@ -156,7 +157,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         String lon = Double.toString(locationhandler.getLon());
         //Get context
         List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
-        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr);
+        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr, this);
         String confidence = "1"; //Currently this is faked
         Log.d("class", classification);
         sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
@@ -169,7 +170,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         String lon = Double.toString(locationhandler.getLon());
         //Get context
         List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
-        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr);
+        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr, this);
         String confidence = "1"; //Currently this is faked
         Log.d("class", classification);
         sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
@@ -239,7 +240,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
             Log.d("WARNING", "Empty context or no users.");
             return;
         }
-        String context = WekaDataGenerator.getMaxClass(contexts);
+        String context = WekaDataGenerator.getMaxClass(contexts, this);
         currentContext = context;
         showContext.setText(currentContext);
         if (playlistID.equals("")) {

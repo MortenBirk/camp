@@ -1,5 +1,6 @@
 package com.cac.camp.camp;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.os.Debug;
 import android.os.Environment;
@@ -175,7 +176,7 @@ public class WekaDataGenerator {
     }
 
 
-    public static String classify(List<DataWindow> dataWindowsCopy, AssetManager assetMgr) {
+    public static String classify(List<DataWindow> dataWindowsCopy, AssetManager assetMgr, Activity activity) {
 
         String rootPath = "";
         J48 cls = new J48();
@@ -199,20 +200,30 @@ public class WekaDataGenerator {
         List<String> results = new ArrayList<String>();
 
         try {
+            String hmmString = "";
+
             for (int i = 0; i < dataWindowsCopy.size(); i++) {
                 value = cls.classifyInstance(originalTrain.instance(i));
                 String prediction = originalTrain.classAttribute().value((int)value);
 
                 results.add(prediction);
+
+                if (prediction.equals("calmParty")) hmmString += "L"; // L for loungy
+                if (prediction.equals("normalParty")) hmmString += "A"; // A for active
+                if (prediction.equals("wildParty")) hmmString += "C"; // C for crazy
             }
+
+            hmmString += "\n";
+            FileLogger.write(hmmString, "wekaoutput.log", activity.getApplicationContext());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return getMaxClass(results);
+        return getMaxClass(results, activity);
     }
 
-    public static String getMaxClass(List<String> results) {
+    public static String getMaxClass(List<String> results, Activity activity) {
         // count number of occurrences in data collection
 
         Map<String, Integer> hm = new HashMap<String, Integer>();
@@ -224,7 +235,10 @@ public class WekaDataGenerator {
             } else {
                 hm.put(pred, 1);
             }
+
+
         }
+
 
         // get the resulting most probable classification
         String maxClass = hm.keySet().iterator().next();
