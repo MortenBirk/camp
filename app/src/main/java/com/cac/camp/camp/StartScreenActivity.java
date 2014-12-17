@@ -30,6 +30,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.spotify.sdk.android.Spotify;
@@ -65,6 +67,8 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     private TextView showContext = null;
 
+    private final String default_song = "2b712q3E27nyW6LGsZxr0y";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +103,8 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         }
 
         assetMgr = this.getAssets();
+        //new UpdateView().execute(this);
+
 
         FileLogger.initFile(this, "wekaoutput.log");
     }
@@ -115,6 +121,9 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     public String getPrev() {
         Random random = new Random();
+        if (playlist.size() == 0) {
+            return default_song;
+        }
         return playlist.get(random.nextInt(playlist.size()));
     }
 
@@ -150,6 +159,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         super.onDestroy();
     }
 
+
     //This method sends a message to the server, about our context and position.
     public void updateContextAndPosition(View view) {
         //Get position
@@ -176,9 +186,17 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
     }
 
-    public void getContexts(View view) {
-        startRequestUpdates();
+    public void updateView() {
+        showContext = (TextView)findViewById(R.id.showContext);
+        if(showContext == null) {
+            Log.d("View update", "it was null");
+            return;
+        }
+        showContext.setText(currentContext);
+        Log.d("View update", "called");
     }
+
+
 
     public void startRequestUpdates() {
         if (requestUpdates.isAlive()) {
@@ -220,7 +238,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         ArrayList<String> user = new ArrayList<String>();
         user.add(USERID);
         currentContext = "chill";
-        showContext.setText(currentContext);
         if (playlistID.equals("")) {
             sc.createPlaylist(user, "chill", this);
         } else {
@@ -240,9 +257,8 @@ public class StartScreenActivity extends Activity implements ClientActivity {
             Log.d("WARNING", "Empty context or no users.");
             return;
         }
-        String context = WekaDataGenerator.getMaxClass(contexts, this);
+        String context = WekaDataGenerator.getMaxClass(contexts);
         currentContext = context;
-        showContext.setText(currentContext);
         if (playlistID.equals("")) {
             sc.createPlaylist(users, context, this);
         } else {
@@ -251,6 +267,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     }
 
     public void play(View view) {
+        startRequestUpdates();
         SpotifySingleton spotify = SpotifySingleton.getInstance();
         if (spotify.isPlaying()) {
             spotify.stop();

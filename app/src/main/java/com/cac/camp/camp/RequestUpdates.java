@@ -16,6 +16,14 @@ public class RequestUpdates extends Thread {
     public void run() {
         while (true) {
             activity.getContexts();
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    activity.updateView();
+                }
+            });
+
             try {
                 Thread.sleep(30000);
             } catch (InterruptedException e) {
