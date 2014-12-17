@@ -76,6 +76,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         locations.add(new Position(56.171922, 10.188691)); //Babbage
         locations.add(new Position(56.1723, 10.188276));   //Fredagsbar.dk (IMV)
         locations.add(new Position(56.159984,10.198749)); //Sehrøgade
+        locations.add(new Position(56.17201, 10.189292));
         locationhandler = new LocationHandler(this);
         sensorHandler = new SensorHandler(this);
         sc = new ServerCommunicator(this);
@@ -109,10 +110,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
         FileLogger.initFile(this, "wekaoutput.log");
     }
 
-    public void gotoPlaylist(View view) {
-        //startActivity(new Intent(this, PlaylistPlayerActivity.class));
-        SpotifySingleton.getInstance().play("0aO9fmrQXxZi2ZOwtdtggZ");
-    }
 
 
     public String getNext() {
@@ -160,29 +157,15 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     }
 
 
-    //This method sends a message to the server, about our context and position.
-    public void updateContextAndPosition(View view) {
-        //Get position
-        String lat = Double.toString(locationhandler.getLat());
-        String lon = Double.toString(locationhandler.getLon());
-        //Get context
-        List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
-        String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr, this);
-        String confidence = "1"; //Currently this is faked
-        Log.d("class", classification);
-        sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
-    }
-
     public void updateContextAndPosition() {
         //Get position
-        Log.d("Log", "Updated context");
         String lat = Double.toString(locationhandler.getLat());
         String lon = Double.toString(locationhandler.getLon());
         //Get context
         List<DataWindow> dataWindowsCopy = new CopyOnWriteArrayList<DataWindow>(sensorHandler.getDataWindows());
         String classification = WekaDataGenerator.classify(dataWindowsCopy, assetMgr, this);
         String confidence = "1"; //Currently this is faked
-        Log.d("class", classification);
+        //Log.d("class", classification);
         sc.updateContextAndPosition(USERID, lat, lon, classification, confidence, this);
     }
 
@@ -193,7 +176,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
             return;
         }
         showContext.setText(currentContext);
-        Log.d("View update", "called");
+        Log.d("View update", currentContext);
     }
 
 
@@ -209,6 +192,7 @@ public class StartScreenActivity extends Activity implements ClientActivity {
 
     public void getContexts() {
         //Get position
+        Log.d("Status", "gettting contexts");
         String lat = Double.toString(locationhandler.getLat());
         String lon = Double.toString(locationhandler.getLon());
         boolean atParty = false;
@@ -220,8 +204,10 @@ public class StartScreenActivity extends Activity implements ClientActivity {
             }
         }
         if(atParty) {
+            Log.d("Status", "NOT at party");
             sc.getContexts(lat, lon, this);
         } else {
+            Log.d("Status", "YES at party");
             createChillPlaylist();
         }
     }
@@ -230,7 +216,6 @@ public class StartScreenActivity extends Activity implements ClientActivity {
     public void setCurrentPlaylist(String id, ArrayList<String> playlist) {
         playlistID = id;
         this.playlist = playlist;
-        Log.d("done", "playlist created");
     }
 
     //If you are alone, create the chill playlist
