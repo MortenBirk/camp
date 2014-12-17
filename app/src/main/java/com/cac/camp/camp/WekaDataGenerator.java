@@ -212,8 +212,16 @@ public class WekaDataGenerator {
         return getMaxClass(results);
     }
 
-    public static String getMaxClass(List<String> results) {
+    public static String getMaxClass(List<String> input) {
         // count number of occurrences in data collection
+        List<String> results = new ArrayList<String>();
+        if(input.size() > 10) { //We only have interest in last 10 windows
+            for(int i = input.size() - 10; i < input.size(); i++) {
+                results.add(input.get(i));
+            }
+        } else {
+            results = input;
+        }
 
         Map<String, Integer> hm = new HashMap<String, Integer>();
         for (String pred : results) {
